@@ -1,0 +1,4 @@
+/* Localized versions of Info.plist keys */
+
+CFBundleHelpBookName = "File Comparator Help";
+HPDBookRemoteURL = "http://lisapple.free.fr/fileComparator/help/last/en/";

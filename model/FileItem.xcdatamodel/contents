@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model name="" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="2061" systemVersion="11G63" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="AudioItem" representedClassName="AudioItem" parentEntity="FileItem" syncable="YES">
+        <attribute name="album" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="approximateDuration" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="artist" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="channelLayout" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="comments" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="composer" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="copyright" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="encodingApplication" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="genre" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="keySignature" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="lyriscist" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="nominalBitRate" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="recorderDate" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="sourceBitDepth" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="sourceEncoder" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="tempo" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="timeSignature" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="trackNumber" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="year" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="audioGroups" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="AudioItemGroup" inverseName="originalItems" inverseEntity="AudioItemGroup" indexed="YES" syncable="YES"/>
+    </entity>
+    <entity name="AudioItemGroup" parentEntity="AudioItem" syncable="YES">
+        <relationship name="items" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="AudioItem" inverseName="audioGroups" inverseEntity="AudioItem" indexed="YES" syncable="YES"/>
+        <relationship name="originalItems" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="AudioItem" inverseName="audioGroups" inverseEntity="AudioItem" syncable="YES"/>
+    </entity>
+    <entity name="FileItem" representedClassName="FileItem" syncable="YES">
+        <attribute name="creationDate" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="extension" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="filename" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="fileSize" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="fileType" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="info" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="isBroken" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
+        <attribute name="isFile" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="labelColorNumber" optional="YES" attributeType="Integer 16" defaultValueString="-1" syncable="YES"/>
+        <attribute name="lastModificationDate" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="lockState" optional="YES" attributeType="Integer 16" defaultValueString="-1" syncable="YES"/>
+        <attribute name="path" optional="YES" attributeType="String" indexed="YES" syncable="YES"/>
+        <attribute name="selected" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
+        <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="fileGroups" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="FileItemGroup" inverseName="originalItems" inverseEntity="FileItemGroup" indexed="YES" syncable="YES"/>
+    </entity>
+    <entity name="FileItemGroup" parentEntity="FileItem" syncable="YES">
+        <relationship name="items" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FileItem" inverseName="fileGroups" inverseEntity="FileItem" indexed="YES" syncable="YES"/>
+        <relationship name="originalItems" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="FileItem" inverseName="fileGroups" inverseEntity="FileItem" syncable="YES"/>
+    </entity>
+    <entity name="ImageItem" representedClassName="ImageItem" parentEntity="FileItem" syncable="YES">
+        <attribute name="bitsPerPixel" optional="YES" attributeType="Integer 16" defaultValueString="-1" syncable="YES"/>
+        <attribute name="bytesPerRow" optional="YES" attributeType="Integer 16" defaultValueString="-1" syncable="YES"/>
+        <attribute name="depth" optional="YES" attributeType="Integer 16" defaultValueString="-1" syncable="YES"/>
+        <attribute name="exifCameraOwnerName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="exifContrast" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="exifExposureTime" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="exifFlash" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
+        <attribute name="exifFNumber" optional="YES" attributeType="Integer 16" defaultValueString="-1" syncable="YES"/>
+        <attribute name="exifFocalLength" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="exifISOSpeedRatings" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="exifSaturation" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="exifSerialNumber" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="exifSharpness" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="exifUserComment" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="gifDelayTime" optional="YES" attributeType="Integer 16" defaultValueString="-1" syncable="YES"/>
+        <attribute name="gifLoopCount" optional="YES" attributeType="Integer 16" defaultValueString="-1" syncable="YES"/>
+        <attribute name="gpsAltitude" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="gpsDateStamp" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="gpsLatitude" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="gpsLongitude" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="hasAlpha" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
+        <attribute name="height" optional="YES" attributeType="Integer 16" defaultValueString="-1" syncable="YES"/>
+        <attribute name="orientation" optional="YES" attributeType="Integer 16" defaultValueString="-1" syncable="YES"/>
+        <attribute name="pngInterlaceType" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
+        <attribute name="tiffCompression" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="tiffMake" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="tiffModel" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="tiffSoftware" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="width" optional="YES" attributeType="Integer 16" defaultValueString="-1" syncable="YES"/>
+        <relationship name="imageGroups" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="ImageItemGroup" inverseName="originalItems" inverseEntity="ImageItemGroup" indexed="YES" syncable="YES"/>
+    </entity>
+    <entity name="ImageItemGroup" parentEntity="ImageItem" syncable="YES">
+        <relationship name="items" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="ImageItem" inverseName="imageGroups" inverseEntity="ImageItem" indexed="YES" syncable="YES"/>
+        <relationship name="originalItems" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="ImageItem" inverseName="imageGroups" inverseEntity="ImageItem" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="AudioItem" positionX="-72" positionY="198" width="128" height="360"/>
+        <element name="AudioItemGroup" positionX="-81" positionY="597" width="128" height="75"/>
+        <element name="FileItem" positionX="160" positionY="198" width="128" height="270"/>
+        <element name="FileItemGroup" positionX="153" positionY="501" width="128" height="75"/>
+        <element name="ImageItem" positionX="376" positionY="198" width="128" height="495"/>
+        <element name="ImageItemGroup" positionX="369" positionY="729" width="128" height="75"/>
+    </elements>
+</model>

@@ -1,0 +1,436 @@
+/*
+ Localizable.strings
+ Comparator
+ 
+ Created by Max on 29/02/12.
+ Copyright (c) 2012 Lis@cintosh. All rights reserved.
+ */
+
+"fileOptionsShort" = "Opt. Fichier";
+"imageOptionsShort" = "Opt. Image";
+"audioOptionsShort" = "Opt. Audio";
+
+"Files Options" = "Options de Fichiers";
+"Images Options" = "Options d'Images";
+"Audio Files Options" = "Options de Fichiers Audio";
+"Advanced Options" = "Options Avancées";
+
+"%@ Files" = "%@ Fichiers";
+"Unknown Type" = "Type inconnu";
+"No Extension" = "Aucune extension";
+
+"Remove from Trash" = "Retirer de la corbeille";
+"Move to Trash" = "Mettre à la corbeille";
+"Do not Replace" = "Ne pas remplacer";
+"Replace with Alias" = "Remplacer par un raccourcis";
+
+"Show differences" = "Afficher les différences";
+
+/* No comment provided by engineer. */
+"%li items" = "%li éléments";
+
+/* No comment provided by engineer. */
+"(No extensions)" = "(No extensions)";
+
+/* No comment provided by engineer. */
+"(No informations)" = "(No informations)";
+
+/* No comment provided by engineer. */
+"(No type)" = "(No type)";
+
+/* No comment provided by engineer. */
+"Add" = "Ajouter";
+
+/* No comment provided by engineer. */
+"All files with these extensions will be excluded from comparaison" = "Tous les fichiers avec ces extensions seront exclus de la comparaison";
+
+/* No comment provided by engineer. */
+"Audio" = "Audio";
+
+/* No comment provided by engineer. */
+"audioOptions" = "Opt. Audio";
+
+/* No comment provided by engineer. */
+"Brokens Aliases" = "Raccourcis cassés";
+
+/* No comment provided by engineer. */
+"BYTES" = "octets";
+
+/* No comment provided by engineer. */
+"Cancel" = "Annuler";
+
+/* No comment provided by engineer. */
+"Choose" = "Choisir";
+
+/* No comment provided by engineer. */
+"Choose a directory or a file." = "Choisissez un dossier ou un fichier.";
+
+/* No comment provided by engineer. */
+"Choose files and directories before start the analyse." = "Choisissez des fichiers et dossiers avant de lancer une analyse.";
+
+/* No comment provided by engineer. */
+"CHOOSE_OPTIONS_AND_SOURCES" = "Choisissez des options et des sources";
+
+/* No comment provided by engineer. */
+"Click on \"+\" for a new comparaison" = "Appuyer sur \"+\" pour une autre comparaison";
+
+/* No comment provided by engineer. */
+"COMPARAISON_FINISHED" = "Comparaison finie";
+
+/* No comment provided by engineer. */
+"Compare the %@" = "Comparaison %@";
+
+/* No comment provided by engineer. */
+"COMPARING_AUDIO_FILES" = "Compare les fichiers audio...";
+
+/* No comment provided by engineer. */
+"COMPARING_FILES" = "Compare les fichiers...";
+
+/* No comment provided by engineer. */
+"COMPARING_IMAGES." = "Compare les images...";
+
+/* No comment provided by engineer. */
+"Create a New Comparaison" = "Relancer une analyse";
+
+/* No comment provided by engineer. */
+"Delete" = "Supprimer";
+
+/* No comment provided by engineer. */
+"Discard Change" = "Perdre les changements";
+
+/* No comment provided by engineer. */
+"Do you want to close the window?" = "Vous-vous fermer la fenêtre?";
+
+/* No comment provided by engineer. */
+"Don't Close" = "Ne pas fermer";
+
+/* No comment provided by engineer. */
+"Dropbox is a service to backup files on server, this data could only be removed manually. If you really want to add this folder, click ignore." = "Dropbox est un service de sauvegarde en ligne, les fichiers devraient être supprimés manuellement. Si vous voulez vraiment ajouter ce dossier, cliquez sur Ignorer.";
+
+/* No comment provided by engineer. */
+"Duplicates" = "Doublons";
+
+/* No comment provided by engineer. */
+"empty" = "Vide";
+
+/* No comment provided by engineer. */
+"Empty Items" = "Éléments vides";
+
+/* No comment provided by engineer. */
+"Empty the Trash" = "Vider la corbeille";
+
+/* No comment provided by engineer. */
+"Export" = "Exporter";
+
+/* No comment provided by engineer. */
+"Ext. Blacklist" = "Liste Noire";
+
+/* No comment provided by engineer. */
+"Ext. Whitlist" = "Liste Blanche";
+
+/* No comment provided by engineer. */
+"fileOptions" = "Opt. de Fichier";
+
+/* No comment provided by engineer. */
+"Files" = "Fichiers";
+
+/* No comment provided by engineer. */
+"Folder" = "Dossiers";
+
+/* No comment provided by engineer. */
+"GIGABYTES" = "Go";
+
+/* No comment provided by engineer. */
+"Ignore" = "Ignorer";
+
+/* No comment provided by engineer. */
+"imageOptions" = "Opt. d'Image";
+
+/* No comment provided by engineer. */
+"Images" = "Images";
+
+/* No comment provided by engineer. */
+"Items to Deleted" = "Éléments à Supprimer";
+
+/* No comment provided by engineer. */
+"Items to Replace with Alias" = "Élement à remplacer avec un raccourcis";
+
+/* No comment provided by engineer. */
+"KILOBYTES" = "Ko";
+
+/* No comment provided by engineer. */
+"Listing directories..." = "Création de la liste des dossiers...";
+
+/* No comment provided by engineer. */
+"MEGABYTES" = "Mo";
+
+/* No comment provided by engineer. */
+"Move" = "Déplacer";
+
+/* No comment provided by engineer. */
+"Move to Trash" = "Mettre à la Corbeille";
+
+/* No comment provided by engineer. */
+"Move to..." = "Déplacer vers...";
+
+/* No comment provided by engineer. */
+"No Broken Aliases" = "Aucun raccourcis cassé";
+
+/* No comment provided by engineer. */
+"No comparaison options selected!" = "Aucun option n'est sélectionnée!";
+
+/* No comment provided by engineer. */
+"No Duplicates" = "Aucun doublons";
+
+/* No comment provided by engineer. */
+"No Empty Items" = "Aucune élément vide";
+
+/* No comment provided by engineer. */
+"No files on input!" = "Aucun fichier!";
+
+/* No comment provided by engineer. */
+"No Items into the Trash" = "Aucun élément dans la corbeille";
+
+/* No comment provided by engineer. */
+"No Items to Replace with Alias" = "Aucun élément à remplacer";
+
+/* No comment provided by engineer. */
+"OK" = "OK";
+
+/* No comment provided by engineer. */
+"Only files with these extensions will be included from comparaison" = "Uniquement les fichiers avec ces extensions seront inclus dans la comparaison";
+
+/* No comment provided by engineer. */
+"Original items can't be replaced with alias." = "Les fichiers originaux ne peuvent être remplacés par des raccourcis.";
+
+/* No comment provided by engineer. */
+"Please select options for comparaison before start the analyse." = "Veuillez sélectionner des options avant de lancer l'analyse.";
+
+/* No comment provided by engineer. */
+"READY_MESSAGE" = "Prêt!";
+
+/* No comment provided by engineer. */
+"Replace Items" = "Remplacer les éléments";
+
+/* No comment provided by engineer. */
+"Run for Checked Sources" = "Lancer avec les sources sélectionnées";
+
+/* No comment provided by engineer. */
+"Search" = "Rechercher";
+
+/* No comment provided by engineer. */
+"Some items can't be moved to trash (the file system may not manage trash system). Would you want to delete the file?\nThis operation can't be undone." = "Certains éléments ne peuvent être déplacés dans la corbeille (le système de fichier ne le prend pas en compte). Voulez-vous supprimer ces fichiers?\nCette opération ne pourra pas être annulée.";
+
+/* No comment provided by engineer. */
+"SOURCES_SECTION_TITLE" = "SOURCES";
+
+/* No comment provided by engineer. */
+"Stopping..." = "En arrêt...";
+
+/* No comment provided by engineer. */
+"TERABYTES" = "To";
+
+/* No comment provided by engineer. */
+"There is %ld current tasks. Would you like to close the window and discard the changes?" = "Il y a actuellement %ls tâches en court. Voulez-vous fermer la fenêtre et perdre les changements?";
+
+/* No comment provided by engineer. */
+"Untitled.txt" = "Sans Tire.txt";
+
+/* No comment provided by engineer. */
+"Untitled.xml" = "Sans Titre.xml";
+
+/* No comment provided by engineer. */
+"You have added a Dropbox folder content." = "Vous avez ajouté un dossier Dropbox.";
+
+/* No comment provided by engineer. */
+"You have added a System folder." = "Vous avez ajouté un dossier système.";
+
+/* No comment provided by engineer. */
+"You have selected a folder that contains system folder, they may contains very important essantial to Mac OS system. If you really want to add this folder, click ignore." = "Vous avez sélectionné un dossier qui peut contenir des informations essentielles au bon fonctionnement de Mac OS. Si vous voulez vraiment ajouter ce dossier, cliquez sur Ignorer.";
+
+/* No comment provided by engineer. */
+"ZERO_BYTES" = "aucun octet";
+
+
+"No files selected." = "Aucun fichier sélectionné";
+"Drag the folder you want to analyze into the main window." = "Glisser un dossier ici pour l'analyser.";
+
+"Analyzing Files..." = "Analyse des fichiers...";
+"Comparing Files..." = "Comparaison des fichiers...";
+"Comparing Images..." = "Comparaison des images...";
+"Comparing Audio Files..." = "Comparaison des fichiers audio...";
+
+"Finding Empty Items..." = "Recherche d'éléments vides...";
+"Finding Broken Aliases..." = "Recherche de raccourcis...";
+
+"items" = "éléments";
+
+"All Duplicates" = "Tous les doublons";
+"File Duplicates" = "Fichiers";
+"Image Duplicates" = "Images";
+"Audio File Duplicates" = "Fichiers Audio";
+"Duplicates" = "Doublons";
+"Empty Items" = "Éléments vides";
+"Broken Aliases" = "Raccourcis vides";
+
+
+"Would you want to move all duplicates to trash?" = "Vous-vous déplacer tous les doublons dans la corbeille?";
+"Move to Trash" = "Mettre dans la Corbeille";
+"This action cannot be undone." = "Cette action ne peut pas être défaite.";
+
+"Choose a destination for selected items" = "Choisir une destination pour les éléments sélectionnés";
+"Move" = "Déplacer";
+
+"Move Duplicates to Trash..." = "Déplacer les doublons dans la corbeille...";
+"Move Duplicates..." = "Déplacer les doublons...";
+
+"Would you want to replace all duplicates with an alias to the original file?" = "Voulez-vous remplacer tous les doublons avec un raccourcis vers le fichier original?";
+"Replace" = "Remplacer";
+
+"Would you want to move all empty items to trash?" = "Vous-vous déplacer les éléments vides dans la corbeille?";
+"Would you want to move all broken aliases to trash?" = "Vous-vous déplacer les raccourics cassés dans la corbeille?";
+"Would you want to move selected items to trash?" = "Vous-vous déplacer tous les éléments sélectionnés dans la corbeille?";
+
+"Delete" = "Déplacer";
+
+"Would you want to replace selected duplicates with an alias to the original file?" = "Voulez-vous remplacer les doublons sélectionnés avec un raccourcis vers le fichier original?";
+"All duplicates with be moved to Trash.\nThis action cannot be undone." = "Tous les doublons vont être déplacés dans la corbeille.\nCette action ne peut pas être défaite.";
+
+"Replace Duplicates..." = "Remplacer les doublons";
+"Set as Original Item" = "Utiliser comme élément original";
+"Show in Finder" = "Montrer dans le Finder";
+"Show differences" = "Montrer les différences";
+"Move to Trash..." = "Déplacer à la corbeille";
+"Move..." = "Déplacer...";
+"Replace..." = "Remplacer...";
+
+"\nand %ld more items" = "\net %ld autres éléments";
+
+
+"FileItemCompareSizeShortDescription" = "Poids";
+"FileItemCompareFilenameShortDescription" = "Nom";
+"FileItemCompareUTIShortDescription" = "Type";
+"FileItemCompareExtensionShortDescription" = "Extension";
+"FileItemCompareCreationDateShortDescription" = "Créé";
+"FileItemCompareLastModificationDateShortDescription" = "Modifié";
+
+"ImageItemCompareWidthInPixelsShortDescription" = "Largeur";
+"ImageItemCompareHeightInPixelsShortDescription" = "Hauteur";
+"ImageItemCompareDepthShortDescription" = "Définition";
+"ImageItemCompareOrientationShortDescription" = "Orientation";
+"ImageItemCompareHasAlphaShortDescription" = "Opacité";
+"ImageItemCompareBitsPerPixelShortDescription" = "Bits/pixel";
+"ImageItemCompareBytesPerRowShortDescription" = "Octets/ligne";
+"ImageItemCompareExifExposureTimeShortDescription" = "Exposition";
+"ImageItemCompareExifFNumberShortDescription" = "Focale";
+"ImageItemCompareExifISOSpeedRatingsShortDescription" = "Vitesse ISO";
+"ImageItemCompareExifFlashShortDescription" = "Flash";
+"ImageItemCompareExifFocalLengthShortDescription" = "Long. Focal";
+"ImageItemCompareExifUserCommentShortDescription" = "Commentaires";
+"ImageItemCompareExifContrastShortDescription" = "Contraste";
+"ImageItemCompareExifSaturationShortDescription" = "Saturation";
+"ImageItemCompareExifSharpnessShortDescription" = "Piqué";
+"ImageItemCompareExifCameraOwnerNameShortDescription" = "Propriétaire";
+"ImageItemCompareExifSerialNumberShortDescription" = "Num. de série";
+"ImageItemCompareGIFLoopCountShortDescription" = "Nb de boucle";
+"ImageItemCompareGIFDelayTimeShortDescription" = "Délais";
+"ImageItemCompareGPSLatitudeShortDescription" = "Latitude";
+"ImageItemCompareGPSLongitudeShortDescription" = "Longitude";
+"ImageItemCompareGPSAltitudeShortDescription" = "Altitude";
+"ImageItemCompareGPSDateStampShortDescription" = "Date GPS";
+"ImageItemComparePNGInterlaceTypeShortDescription" = "Entrelacé";
+"ImageItemCompareTIFFCompressionShortDescription" = "Compression TIFF";
+"ImageItemCompareTIFFMakeShortDescription" = "Créateur TIFF";
+"ImageItemCompareTIFFModelShortDescription" = "Modèle TIFF";
+"ImageItemCompareTIFFSoftwareShortDescription" = "Logiciel TIFF";
+
+"AudioItemCompareAlbumShortDescription" = "Album";
+"AudioItemCompareApproximateDurationShortDescription" = "Durée";
+"AudioItemCompareArtistShortDescription" = "Artist";
+"AudioItemCompareChannelLayoutShortDescription" = "Canaux";
+"AudioItemCompareCommentsShortDescription" = "Commentaires";
+"AudioItemCompareComposerShortDescription" = "Compositeur";
+"AudioItemCompareCopyrightShortDescription" = "Copyright";
+"AudioItemCompareEncodingApplicationShortDescription" = "Application";
+"AudioItemCompareGenreShortDescription" = "Genre";
+"AudioItemCompareKeySignatureShortDescription" = "Clef";
+"AudioItemCompareLyriscistShortDescription" = "Parolier";
+"AudioItemCompareNominalBitRateShortDescription" = "Débit";
+"AudioItemCompareRecorderDateShortDescription" = "Enregistrement";
+"AudioItemCompareSourceBitDepthShortDescription" = "Résolution";
+"AudioItemCompareSourceEncoderShortDescription" = "Encodeur";
+"AudioItemCompareTempoShortDescription" = "Tempo";
+"AudioItemCompareTimeSignatureShortDescription" = "Temps";
+"AudioItemCompareTitleShortDescription" = "Titre";
+"AudioItemCompareTrackNumberShortDescription" = "Piste";
+"AudioItemCompareYearShortDescription" = "Année";
+
+"AdvancedOptionsIncludeHiddenItemsShortDescription" = "inclure les éléments cachés";
+"AdvancedOptionsIncludeBundleContentShortDescription" = "inclure le contenu des bundles";
+
+"rootPathShortDescription" = "Emplacement";
+
+
+"FileItemCompareSizeName" = "du poids";
+"FileItemCompareFilenameName" = "du nom de fichier";
+"FileItemCompareUTIName" = "du type";
+"FileItemCompareExtensionName" = "de l'extension";
+"FileItemCompareCreationDateName" = "de la date de création";
+"FileItemCompareLastModificationDateName" = "de la date de dernière modification";
+"FileItemCompareContentDataName" = "du contenu";
+
+"ImageItemCompareWidthInPixelsName" = "de la largeur en pixels";
+"ImageItemCompareHeightInPixelsName" = "de la hauteur en pixels";
+"ImageItemCompareDepthName" = "de la définition";
+"ImageItemCompareOrientationName" = "de l'orientation";
+"ImageItemCompareHasAlphaName" = "de l'opacité";
+"ImageItemCompareBitsPerPixelName" = "du nombre de bits par pixel";
+"ImageItemCompareBytesPerRowName" = "du nombre d'octets par ligne";
+"ImageItemCompareExifExposureTimeName" = "de l'exposition";
+"ImageItemCompareExifFNumberName" = "du la valeur focale";
+"ImageItemCompareExifISOSpeedRatingsName" = "de la vitesse ISO";
+"ImageItemCompareExifFlashName" = "de l'activation du flash";
+"ImageItemCompareExifFocalLengthName" = "de la longueur focale";
+"ImageItemCompareExifUserCommentName" = "des commentaires";
+"ImageItemCompareExifContrastName" = "du contraste";
+"ImageItemCompareExifSaturationName" = "de la saturation";
+"ImageItemCompareExifSharpnessName" = "du piqué";
+"ImageItemCompareExifCameraOwnerNameName" = "du propriétaire de l'appareil";
+"ImageItemCompareExifSerialNumberName" = "du numéro de série";
+"ImageItemCompareGIFLoopCountName" = "du nombre de boucle";
+"ImageItemCompareGIFDelayTimeName" = "du délai";
+"ImageItemCompareGPSLatitudeName" = "de la latitude";
+"ImageItemCompareGPSLongitudeName" = "de la longitude";
+"ImageItemCompareGPSAltitudeName" = "de l'altitude";
+"ImageItemCompareGPSDateStampName" = "de la date GPS";
+"ImageItemComparePNGInterlaceTypeName" = "de l'entrelacement";
+"ImageItemCompareTIFFCompressionName" = "de la compression";
+"ImageItemCompareTIFFMakeName" = "du créateur";
+"ImageItemCompareTIFFModelName" = "du modèle";
+"ImageItemCompareTIFFSoftwareName" = "du logiciel";
+
+"AudioItemCompareAlbumName" = "de l'album";
+"AudioItemCompareApproximateDurationName" = "de la durée";
+"AudioItemCompareArtistName" = "de l'artist";
+"AudioItemCompareChannelLayoutName" = "du nombre des canaux";
+"AudioItemCompareCommentsName" = "des commentaires";
+"AudioItemCompareComposerName" = "du compositeur";
+"AudioItemCompareCopyrightName" = "du copyright";
+"AudioItemCompareEncodingApplicationName" = "de l'application d'encodage";
+"AudioItemCompareGenreName" = "du genre";
+"AudioItemCompareKeySignatureName" = "de la clef";
+"AudioItemCompareLyriscistName" = "du parolier";
+"AudioItemCompareNominalBitRateName" = "du débit";
+"AudioItemCompareRecorderDateName" = "de la date d'enregistrement";
+"AudioItemCompareSourceBitDepthName" = "de la définition";
+"AudioItemCompareSourceEncoderName" = "du nom de l'encodeur";
+"AudioItemCompareTempoName" = "du tempo";
+"AudioItemCompareTimeSignatureName" = "de la signature temporelle";
+"AudioItemCompareTitleName" = "du titre";
+"AudioItemCompareTrackNumberName" = "du numéro de piste";
+"AudioItemCompareYearName" = "de l'année";
+
+"AdvancedOptionsIncludeHiddenItemsName" = "inclure les éléments cachés";
+"AdvancedOptionsIncludeBundleContentName" = "inclure le contenu des bundles";
+"AdvancedOptionsSearchBrokenAliasesName" = "chercher les raccourcis cassés";
+"AdvancedOptionsSearchEmptyItemsName" = "chercher les éléments vides";

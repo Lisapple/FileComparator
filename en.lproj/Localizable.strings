@@ -1,0 +1,433 @@
+/*
+ Localizable.strings
+ Comparator
+ 
+ Created by Max on 29/02/12.
+ Copyright (c) 2012 Lis@cintosh. All rights reserved.
+ */
+
+"fileOptionsShort" = "File Opt.";
+"imageOptionsShort" = "Image Opt.";
+"audioOptionsShort" = "Audio Opt.";
+
+/* No comment provided by engineer. */
+"%li items" = "%li items";
+
+/* No comment provided by engineer. */
+"(No extensions)" = "(No extensions)";
+
+/* No comment provided by engineer. */
+"(No informations)" = "(No informations)";
+
+/* No comment provided by engineer. */
+"(No type)" = "(No type)";
+
+/* No comment provided by engineer. */
+"Add" = "Add";
+
+/* No comment provided by engineer. */
+"All files with these extensions will be excluded from comparaison" = "All files with these extensions will be excluded from comparaison";
+
+/* No comment provided by engineer. */
+"Audio" = "Audio";
+
+/* No comment provided by engineer. */
+"audioOptions" = "Audio Options";
+
+/* No comment provided by engineer. */
+"Brokens Aliases" = "Brokens Aliases";
+
+/* No comment provided by engineer. */
+"BYTES" = "bytes";
+
+/* No comment provided by engineer. */
+"Cancel" = "Cancel";
+
+/* No comment provided by engineer. */
+"Choose" = "Choose";
+
+/* No comment provided by engineer. */
+"Choose a directory or a file." = "Choose a directory or a file.";
+
+/* No comment provided by engineer. */
+"Choose files and directories before start the analyse." = "Choose files and directories before start the analyse.";
+
+/* No comment provided by engineer. */
+"CHOOSE_OPTIONS_AND_SOURCES" = "Please choose options and sources";
+
+/* No comment provided by engineer. */
+"Click on \"+\" for a new comparaison" = "Click on \"+\" for a new comparaison";
+
+/* No comment provided by engineer. */
+"COMPARAISON_FINISHED" = "Comparaison Finished";
+
+/* No comment provided by engineer. */
+"Compare the %@" = "Compare the %@";
+
+/* No comment provided by engineer. */
+"COMPARING_AUDIO_FILES" = "Comparing audio files...";
+
+/* No comment provided by engineer. */
+"COMPARING_FILES" = "Comparing files...";
+
+/* No comment provided by engineer. */
+"COMPARING_IMAGES." = "Comparing images...";
+
+/* No comment provided by engineer. */
+"Create a New Comparaison" = "Create a New Comparaison";
+
+/* No comment provided by engineer. */
+"Delete" = "Delete";
+
+/* No comment provided by engineer. */
+"Discard Change" = "Discard Change";
+
+/* No comment provided by engineer. */
+"Do you want to close the window?" = "Do you want to close the window?";
+
+/* No comment provided by engineer. */
+"Don't Close" = "Don't Close";
+
+/* No comment provided by engineer. */
+"Dropbox is a service to backup files on server, this data could only be removed manually. If you really want to add this folder, click ignore." = "Dropbox is a service to backup files on server, this data could only be removed manually. If you really want to add this folder, click ignore.";
+
+/* No comment provided by engineer. */
+"Dropbox is a service to backup files on server, this data could only be removed manually. You can add several subfolder from the selected folder. If you really want to add this folder, click ignore." = "Dropbox is a service to backup files on server, this data could only be removed manually. You can add several subfolder from the selected folder. If you really want to add this folder, click ignore.";
+
+/* No comment provided by engineer. */
+"Duplicates" = "Duplicates";
+
+/* No comment provided by engineer. */
+"empty" = "empty";
+
+/* No comment provided by engineer. */
+"Empty Items" = "Empty Items";
+
+/* No comment provided by engineer. */
+"Empty the Trash" = "Empty the Trash";
+
+/* No comment provided by engineer. */
+"Export" = "Export";
+
+/* No comment provided by engineer. */
+"Ext. Blacklist" = "Ext. Blacklist";
+
+/* No comment provided by engineer. */
+"Ext. Whitlist" = "Ext. Whitelist";
+
+/* No comment provided by engineer. */
+"fileOptions" = "File Options";
+
+/* No comment provided by engineer. */
+"Files" = "Files";
+
+/* No comment provided by engineer. */
+"Folder" = "Folder";
+
+/* No comment provided by engineer. */
+"GIGABYTES" = "GB";
+
+/* No comment provided by engineer. */
+"Ignore" = "Ignore";
+
+/* No comment provided by engineer. */
+"imageOptions" = "Image Options";
+
+/* No comment provided by engineer. */
+"Images" = "Images";
+
+/* No comment provided by engineer. */
+"Items to Deleted" = "Items to Deleted";
+
+/* No comment provided by engineer. */
+"Items to Replace with Alias" = "Items to Replace with Alias";
+
+/* No comment provided by engineer. */
+"KILOBYTES" = "KB";
+
+/* No comment provided by engineer. */
+"Listing directories..." = "Listing directories...";
+
+/* No comment provided by engineer. */
+"MEGABYTES" = "MB";
+
+/* No comment provided by engineer. */
+"Move" = "Move";
+
+/* No comment provided by engineer. */
+"Move to Trash" = "Move to Trash";
+
+/* No comment provided by engineer. */
+"Move to..." = "Move to...";
+
+/* No comment provided by engineer. */
+"No Broken Aliases" = "No Broken Aliases";
+
+/* No comment provided by engineer. */
+"No comparaison options selected!" = "No comparaison options selected!";
+
+/* No comment provided by engineer. */
+"No Duplicates" = "No Duplicates";
+
+/* No comment provided by engineer. */
+"No Empty Items" = "No Empty Items";
+
+/* No comment provided by engineer. */
+"No files on input!" = "No files on input!";
+
+/* No comment provided by engineer. */
+"No Items into the Trash" = "No Items into the Trash";
+
+/* No comment provided by engineer. */
+"No Items to Replace with Alias" = "No Items to Replace with Alias";
+
+/* No comment provided by engineer. */
+"OK" = "OK";
+
+/* No comment provided by engineer. */
+"Only files with these extensions will be included from comparaison" = "Only files with these extensions will be included from comparaison";
+
+/* No comment provided by engineer. */
+"Original items can't be replaced with alias." = "Original items can't be replaced with alias.";
+
+/* No comment provided by engineer. */
+"Please select options for comparaison before start the analyse." = "Please select options for comparaison before start the analyse.";
+
+/* No comment provided by engineer. */
+"READY_MESSAGE" = "Ready to Run!";
+
+/* No comment provided by engineer. */
+"Replace Items" = "Replace Items";
+
+/* No comment provided by engineer. */
+"Replace with alias button replace checked items by aliases to original item. All items marked with warning button will not be replaced by alias." = "Replace with alias button replace checked items by aliases to original item. All items marked with warning button will not be replaced by alias.";
+
+/* No comment provided by engineer. */
+"Run for Checked Sources" = "Run for Checked Sources";
+
+/* No comment provided by engineer. */
+"Search" = "Search";
+
+/* No comment provided by engineer. */
+"Some items can't be moved to trash (the file system may not manage trash system). Would you want to delete the file?\nThis operation can't be undone." = "Some items can't be moved to trash (the file system may not manage trash system). Would you want to delete the file?\nThis operation can't be undone.";
+
+/* No comment provided by engineer. */
+"SOURCES_SECTION_TITLE" = "SOURCES";
+
+/* No comment provided by engineer. */
+"Stopping..." = "Stopping...";
+
+/* No comment provided by engineer. */
+"TERABYTES" = "TB";
+
+/* No comment provided by engineer. */
+"There is %ld current tasks. Would you like to close the window and discard the changes?" = "There is %ld current tasks. Would you like to close the window and discard the changes?";
+
+/* No comment provided by engineer. */
+"Untitled.txt" = "Untitled.txt";
+
+/* No comment provided by engineer. */
+"Untitled.xml" = "Untitled.xml";
+
+/* No comment provided by engineer. */
+"You have added a Dropbox folder content." = "You have added a Dropbox folder content.";
+
+/* No comment provided by engineer. */
+"You have added a System folder." = "You have added a System folder.";
+
+/* No comment provided by engineer. */
+"You have selected a folder that contains system folder, they may contains very important essantial to Mac OS system. If you really want to add this folder, click ignore." = "You have selected a folder that contains system folder, they may contains very important essantial to Mac OS system. If you really want to add this folder, click ignore.";
+
+/* No comment provided by engineer. */
+"You have selected a folder that contains system folder, they may contains very important essantial to Mac OS system. You should add several subfolder from the selected folder if you are sure of the content. If you really want to add this folder, click ignore." = "You have selected a folder that contains system folder, they may contains very important essantial to Mac OS system. You should add several subfolder from the selected folder if you are sure of the content. If you really want to add this folder, click ignore.";
+
+/* No comment provided by engineer. */
+"ZERO_BYTES" = "zero bytes";
+
+
+"No files selected.";
+"Drag the folder you want to analyze into the main window.";
+
+"Analyzing Files…";
+"Comparing Files...";
+"Comparing Images...";
+"Comparing Audio Files...";
+
+"Finding Empty Items...";
+"Finding Broken Aliases...";
+
+"items";
+
+"All Duplicates";
+"File Duplicates";
+"Image Duplicates";
+"Audio File Duplicates";
+"Duplicates";
+"Empty Items";
+"Broken Aliases";
+
+
+"Would you want to move all duplicates to trash?";
+"Move to Trash";
+"This action cannot be undone.";
+
+"Choose a destination for selected items";
+"Move";
+
+"Move Duplicates to Trash...";
+"Move Duplicates...";
+
+"Would you want to replace all duplicates with an alias to the original file?";
+"Replace";
+"All duplicates will be moved to Trash.\nThis action cannot be undone.";
+
+"Would you want to move all empty items to trash?";
+"Would you want to move all broken aliases to trash?";
+
+"Delete";
+
+"Choose a destination for selected items";
+
+"Would you want to move selected items to trash?";
+
+"Would you want to replace selected duplicates with an alias to the original file?";
+"Replace";
+"All duplicates with be moved to Trash.\nThis action cannot be undone.";
+
+"Replace Duplicates...";
+"Set as Original Item";
+"Show in Finder";
+"Show differences";
+"Move to Trash...";
+"Move...";
+"Replace...";
+
+"\nand %ld more items";
+
+"FileItemCompareSizeShortDescription" = "Size";
+"FileItemCompareFilenameShortDescription" = "Filename";
+"FileItemCompareUTIShortDescription" = "Kind";
+"FileItemCompareExtensionShortDescription" = "Extension";
+"FileItemCompareCreationDateShortDescription" = "Created";
+"FileItemCompareLastModificationDateShortDescription" = "Modified";
+
+"ImageItemCompareWidthInPixelsShortDescription" = "Width";
+"ImageItemCompareHeightInPixelsShortDescription" = "Height";
+"ImageItemCompareDepthShortDescription" = "Depth";
+"ImageItemCompareOrientationShortDescription" = "Orientation";
+"ImageItemCompareHasAlphaShortDescription" = "Alpha";
+"ImageItemCompareBitsPerPixelShortDescription" = "Bits/pixel";
+"ImageItemCompareBytesPerRowShortDescription" = "Bytes/row";
+"ImageItemCompareExifExposureTimeShortDescription" = "Exposure";
+"ImageItemCompareExifFNumberShortDescription" = "Focal Ratio";
+"ImageItemCompareExifISOSpeedRatingsShortDescription" = "ISO Speed";
+"ImageItemCompareExifFlashShortDescription" = "Flash";
+"ImageItemCompareExifFocalLengthShortDescription" = "Focal Len.";
+"ImageItemCompareExifUserCommentShortDescription" = "Comments";
+"ImageItemCompareExifContrastShortDescription" = "Contrast";
+"ImageItemCompareExifSaturationShortDescription" = "Saturation";
+"ImageItemCompareExifSharpnessShortDescription" = "Sharpness";
+"ImageItemCompareExifCameraOwnerNameShortDescription" = "Camera Owner";
+"ImageItemCompareExifSerialNumberShortDescription" = "Serial Numb.";
+"ImageItemCompareGIFLoopCountShortDescription" = "Loop Count";
+"ImageItemCompareGIFDelayTimeShortDescription" = "Delay";
+"ImageItemCompareGPSLatitudeShortDescription" = "Latitude";
+"ImageItemCompareGPSLongitudeShortDescription" = "Longitude";
+"ImageItemCompareGPSAltitudeShortDescription" = "Altitude";
+"ImageItemCompareGPSDateStampShortDescription" = "GPS Date";
+"ImageItemComparePNGInterlaceTypeShortDescription" = "Interlaced";
+"ImageItemCompareTIFFCompressionShortDescription" = "TIFF Compression";
+"ImageItemCompareTIFFMakeShortDescription" = "TIFF Maker";
+"ImageItemCompareTIFFModelShortDescription" = "TIFF Model";
+"ImageItemCompareTIFFSoftwareShortDescription" = "TIFF Soft.";
+
+"AudioItemCompareAlbumShortDescription" = "Album";
+"AudioItemCompareApproximateDurationShortDescription" = "Duration";
+"AudioItemCompareArtistShortDescription" = "Artist";
+"AudioItemCompareChannelLayoutShortDescription" = "Channels";
+"AudioItemCompareCommentsShortDescription" = "Comments";
+"AudioItemCompareComposerShortDescription" = "Composer";
+"AudioItemCompareCopyrightShortDescription" = "Copyright";
+"AudioItemCompareEncodingApplicationShortDescription" = "Encoding App.";
+"AudioItemCompareGenreShortDescription" = "Genre";
+"AudioItemCompareKeySignatureShortDescription" = "Key Sign.";
+"AudioItemCompareLyricistShortDescription" = "Lyricist";
+"AudioItemCompareNominalBitRateShortDescription" = "Bit Rate";
+"AudioItemCompareRecorderDateShortDescription" = "Recorder Date";
+"AudioItemCompareSourceBitDepthShortDescription" = "Bit Depth";
+"AudioItemCompareSourceEncoderShortDescription" = "Encoder";
+"AudioItemCompareTempoShortDescription" = "Tempo";
+"AudioItemCompareTimeSignatureShortDescription" = "Time Sign.";
+"AudioItemCompareTitleShortDescription" = "Title";
+"AudioItemCompareTrackNumberShortDescription" = "Track";
+"AudioItemCompareYearShortDescription" = "Year";
+
+"AdvancedOptionsIncludeHiddenItemsShortDescription" = "Include Hidden Items";
+"AdvancedOptionsIncludeBundleContentShortDescription" = "Include Bundle Content";
+
+"rootPathShortDescription" = "Where";
+
+
+"FileItemCompareSizeName" = "size";
+"FileItemCompareFilenameName" = "filename";
+"FileItemCompareUTIName" = "type";
+"FileItemCompareExtensionName" = "extension";
+"FileItemCompareCreationDateName" = "creation date";
+"FileItemCompareLastModificationDateName" = "last modification date";
+"FileItemCompareContentDataName" = "content data";
+
+"ImageItemCompareWidthInPixelsName" = "width in pixels";
+"ImageItemCompareHeightInPixelsName" = "height in pixels";
+"ImageItemCompareDepthName" = "depth";
+"ImageItemCompareOrientationName" = "orientation";
+"ImageItemCompareHasAlphaName" = "alpha value";
+"ImageItemCompareBitsPerPixelName" = "bits per pixel";
+"ImageItemCompareBytesPerRowName" = "bytes per row";
+"ImageItemCompareExifExposureTimeName" = "exposure";
+"ImageItemCompareExifFNumberName" = "focal ratio";
+"ImageItemCompareExifISOSpeedRatingsName" = "ISO speed";
+"ImageItemCompareExifFlashName" = "flash status";
+"ImageItemCompareExifFocalLengthName" = "focal";
+"ImageItemCompareExifUserCommentName" = "user comment";
+"ImageItemCompareExifContrastName" = "contrast";
+"ImageItemCompareExifSaturationName" = "saturation";
+"ImageItemCompareExifSharpnessName" = "sharpness";
+"ImageItemCompareExifCameraOwnerNameName" = "camera owner";
+"ImageItemCompareExifSerialNumberName" = "serial number";
+"ImageItemCompareGIFLoopCountName" = "loop count";
+"ImageItemCompareGIFDelayTimeName" = "delay";
+"ImageItemCompareGPSLatitudeName" = "latitude";
+"ImageItemCompareGPSLongitudeName" = "longitude";
+"ImageItemCompareGPSAltitudeName" = "altitude";
+"ImageItemCompareGPSDateStampName" = "date stamp";
+"ImageItemComparePNGInterlaceTypeName" = "interlace type";
+"ImageItemCompareTIFFCompressionName" = "compression";
+"ImageItemCompareTIFFMakeName" = "creator";
+"ImageItemCompareTIFFModelName" = "model";
+"ImageItemCompareTIFFSoftwareName" = "software";
+
+"AudioItemCompareAlbumName" = "album";
+"AudioItemCompareApproximateDurationName" = "duration";
+"AudioItemCompareArtistName" = "artist";
+"AudioItemCompareChannelLayoutName" = "channel layout";
+"AudioItemCompareCommentsName" = "comments";
+"AudioItemCompareComposerName" = "composer";
+"AudioItemCompareCopyrightName" = "copyright";
+"AudioItemCompareEncodingApplicationName" = "encoding application";
+"AudioItemCompareGenreName" = "genre";
+"AudioItemCompareKeySignatureName" = "key signature";
+"AudioItemCompareLyricistName" = "lyricist";
+"AudioItemCompareNominalBitRateName" = "bit rate";
+"AudioItemCompareRecorderDateName" = "recorder date";
+"AudioItemCompareSourceBitDepthName" = "bit depth";
+"AudioItemCompareSourceEncoderName" = "encoder name";
+"AudioItemCompareTempoName" = "tempo";
+"AudioItemCompareTimeSignatureName" = "time signature";
+"AudioItemCompareTitleName" = "title";
+"AudioItemCompareTrackNumberName" = "track number";
+"AudioItemCompareYearName" = "year";
+
+"AdvancedOptionsIncludeHiddenItemsName" = "include hidden items";
+"AdvancedOptionsIncludeBundleContentName" = "include bundle content";
+"AdvancedOptionsSearchBrokenAliasesName" = "search for broken aliases";
+"AdvancedOptionsSearchEmptyItemsName" = "search for empty items";

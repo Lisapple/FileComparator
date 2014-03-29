@@ -1,0 +1,15 @@
+//
+// Prefix header for all source files of the 'Comparator' target in the 'Comparator' project
+//
+
+#ifdef __OBJC__
+    #import <Cocoa/Cocoa.h>
+#endif
+
+#if _DEBUG_MODE_
+#define NSDebugLog(format, ...) NSLog([@"DEBUG: " stringByAppendingString:(format)], ##__VA_ARGS__)
+#else
+#define NSDebugLog(format, ...)
+#endif
+
+#define _SANDBOX_ACTIVITED_ 0
