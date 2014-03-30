@@ -25,7 +25,6 @@
 		5001BA291607C7070025B0AD /* back_button.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 5001BA2B1607C7070025B0AD /* back_button.pdf */; };
 		5002D30A156D812B0017A8D3 /* MyBigProgressIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 5002D309156D812B0017A8D3 /* MyBigProgressIndicator.m */; };
 		50045BA0167A279F00430DDC /* OptionsWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 50045B9F167A279F00430DDC /* OptionsWindow.m */; };
-		5015742E156BE6BE00EA8860 /* options in Resources */ = {isa = PBXBuildFile; fileRef = 5015742D156BE6BE00EA8860 /* options */; };
 		502208F6149526AA001B8AAF /* MyWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 507F286C135B4B9400CBA4E9 /* MyWindow.m */; };
 		5026B37A1683944B00207393 /* FileInformations.m in Sources */ = {isa = PBXBuildFile; fileRef = 5026B3791683944B00207393 /* FileInformations.m */; };
 		5026B37D1683A76900207393 /* SummaryView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5026B37C1683A76800207393 /* SummaryView.m */; };
@@ -39,6 +38,7 @@
 		5062A2551378829E00257BF6 /* NSString+addition.m in Sources */ = {isa = PBXBuildFile; fileRef = 5062A2541378829E00257BF6 /* NSString+addition.m */; };
 		508F46B5137ADA7C00EA3BB0 /* NSArray+addition.m in Sources */ = {isa = PBXBuildFile; fileRef = 508F46B4137ADA7C00EA3BB0 /* NSArray+addition.m */; };
 		50ABFB32148BC05900EEEE8A /* NSDate+addition.m in Sources */ = {isa = PBXBuildFile; fileRef = 50ABFB31148BC05900EEEE8A /* NSDate+addition.m */; };
+		50C0760618E883E40012DC62 /* File Comparator.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 50C0760518E883E40012DC62 /* File Comparator.entitlements */; };
 		50C21C6916178753007F1753 /* Icon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 50C21C6816178753007F1753 /* Icon.iconset */; };
 		50C5BF691603E536006B7B72 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 50C5BF6B1603E536006B7B72 /* InfoPlist.strings */; };
 		50C7A7181524ADF700B3A153 /* CompareWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 50C7A7161524ADF700B3A153 /* CompareWindow.m */; };
@@ -103,8 +103,6 @@
 		5002D309156D812B0017A8D3 /* MyBigProgressIndicator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyBigProgressIndicator.m; sourceTree = "<group>"; };
 		50045B9E167A279F00430DDC /* OptionsWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OptionsWindow.h; sourceTree = "<group>"; };
 		50045B9F167A279F00430DDC /* OptionsWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OptionsWindow.m; sourceTree = "<group>"; };
-		5015742D156BE6BE00EA8860 /* options */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = options; sourceTree = "<group>"; };
-		50225E2F1337C86E000D4A64 /* To Do List.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = "To Do List.rtf"; sourceTree = "<group>"; };
 		5026B3781683944B00207393 /* FileInformations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileInformations.h; sourceTree = "<group>"; };
 		5026B3791683944B00207393 /* FileInformations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileInformations.m; sourceTree = "<group>"; };
 		5026B37B1683A76700207393 /* SummaryView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SummaryView.h; sourceTree = "<group>"; };
@@ -124,9 +122,9 @@
 		507F286C135B4B9400CBA4E9 /* MyWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyWindow.m; sourceTree = "<group>"; };
 		508F46B3137ADA7C00EA3BB0 /* NSArray+addition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+addition.h"; sourceTree = "<group>"; };
 		508F46B4137ADA7C00EA3BB0 /* NSArray+addition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+addition.m"; sourceTree = "<group>"; };
-		5090ECE91567E45C00D5605A /* File Comparator.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "File Comparator.entitlements"; sourceTree = "<group>"; };
 		50ABFB30148BC05900EEEE8A /* NSDate+addition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+addition.h"; sourceTree = "<group>"; };
 		50ABFB31148BC05900EEEE8A /* NSDate+addition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDate+addition.m"; sourceTree = "<group>"; };
+		50C0760518E883E40012DC62 /* File Comparator.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "File Comparator.entitlements"; sourceTree = "<group>"; };
 		50C21C6816178753007F1753 /* Icon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = Icon.iconset; sourceTree = "<group>"; };
 		50C5BF6A1603E536006B7B72 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		50C5BF6C1603E53B006B7B72 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -267,7 +265,6 @@
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
-				50225E2F1337C86E000D4A64 /* To Do List.rtf */,
 			);
 			name = Comparator;
 			sourceTree = "<group>";
@@ -297,8 +294,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				5090ECE91567E45C00D5605A /* File Comparator.entitlements */,
-				5015742D156BE6BE00EA8860 /* options */,
+				50C0760518E883E40012DC62 /* File Comparator.entitlements */,
 				11DFA4FE1695CD16000758EA /* options-v1.2 */,
 				50C21C6816178753007F1753 /* Icon.iconset */,
 				50378D77156D343600634F72 /* search_settings.png */,
@@ -438,7 +434,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				50FCD34A1422515C001BA4AE /* File Comparator Help in Resources */,
-				5015742E156BE6BE00EA8860 /* options in Resources */,
 				50378D78156D343600634F72 /* search_settings.png in Resources */,
 				505C09EB15E3D73700DED09F /* original.pdf in Resources */,
 				50C5BF691603E536006B7B72 /* InfoPlist.strings in Resources */,
@@ -458,6 +453,7 @@
 				1143C70B169F229E005D8AB0 /* popup-button@2x.png in Resources */,
 				1143C70D169F2393005D8AB0 /* search_settings@2x.png in Resources */,
 				113AF1A916A0851900EA4CA2 /* background-last-group@2x.png in Resources */,
+				50C0760618E883E40012DC62 /* File Comparator.entitlements in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -5,7 +5,7 @@ FileComparator
 
 [File Comparator](http://www.lisacintosh.com/file-comparator) 1.2 for OS X, a duplicate finder for OS X.6 and later.
 
-Source and resources are MIT licence.
+Source and resources are under MIT licence.
 
 [Lisacintosh](http://www.lisacintosh.com), 2014
 
