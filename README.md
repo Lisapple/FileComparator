@@ -1,4 +1,4 @@
-![icon](icon.iconset/icon_128x128.png)
+![icon](Icon.iconset/icon_128x128.png)
 
 FileComparator
 ==============
