@@ -46,9 +46,11 @@
 }
 
 @property (nonatomic, strong) IBOutlet FolderDetailsView * detailsView;
+@property (nonatomic, strong) NSURL * folderURL;
 
 - (void)reloadWithFolderURL:(NSURL *)folderURL;
 
+- (IBAction)showInFinderAction:(id)sender;
 - (IBAction)okAction:(id)sender;
 
 @end

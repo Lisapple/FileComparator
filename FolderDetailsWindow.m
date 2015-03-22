@@ -456,9 +456,26 @@ void DrawTextAtPoint(CGContextRef context, const char * string, float x, float y
 
 - (void)reloadWithFolderURL:(NSURL *)folderURL
 {
+	_folderURL = folderURL;
 	_detailsView.items = [FileInformations propertiesForSubItemsAtPath:folderURL.path];
 	[self setAcceptsMouseMovedEvents:YES];
 	[self makeFirstResponder:_detailsView];
+}
+
+- (IBAction)showInFinderAction:(id)sender
+{
+#if _SANDBOX_SUPPORTED_
+	[_folderURL startAccessingSecurityScopedResource];
+#endif
+	
+	[[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:@[ _folderURL ]];
+	
+#if _SANDBOX_SUPPORTED_
+	[_folderURL stopAccessingSecurityScopedResource];
+#endif
+	
+	[NSApp endSheet:self];
+	[self orderOut:sender];
 }
 
 - (IBAction)okAction:(id)sender
