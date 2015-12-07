@@ -14,7 +14,6 @@
 	
 @private
 	float progressValue;
-	//NSTimer * _animationTimer;
 	dispatch_source_t timer;
 	
 	BOOL _indeterminate;
@@ -25,7 +24,6 @@
 - (void)startAnimation:(id)sender;
 - (void)stopAnimation:(id)sender;
 
-- (IBAction)changeState:(id)sender;
 - (void)setDoubleValue:(double)doubleValue;
 
 - (void)incrementBy:(double)delta;

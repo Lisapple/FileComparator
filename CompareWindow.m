@@ -28,11 +28,9 @@
 - (void)compareItem:(FileItem *)item1 withItem:(FileItem *)item2
 {
 	_item1 = item1;
-	
 	_item1Attributes = [_item1 localizedItemValues];
 	
 	_item2 = item2;
-	
 	_item2Attributes = [_item2 localizedItemValues];
 	
 	NSMutableArray * _keys = [[NSMutableArray alloc] initWithCapacity:10];
@@ -73,7 +71,7 @@
 	cell.font = [NSFont systemFontOfSize:size];
 	
 	if (row < keys.count) {
-		NSString * key = [keys objectAtIndex:row];
+		NSString * key = keys[row];
 		
 		if ([tableColumn.identifier isEqualToString:@"item1"]) {
 			
@@ -103,7 +101,7 @@
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
 {
-	NSString * key = [keys objectAtIndex:rowIndex];
+	NSString * key = keys[rowIndex];
 	
 	if ([aTableColumn.identifier isEqualToString:@"item1"]) {
 		return [_item1Attributes valueForKey:key];

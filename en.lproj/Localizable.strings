@@ -304,6 +304,13 @@
 
 "\nand %ld more items";
 
+"%ld folders";
+"No items - %@";
+
+"Would you like to exclude \"%@\"?";
+"It will be added to blacklist, you can edit this list into application preferences.";
+"Exclude";
+
 "FileItemCompareSizeShortDescription" = "Size";
 "FileItemCompareFilenameShortDescription" = "Filename";
 "FileItemCompareUTIShortDescription" = "Kind";
@@ -429,5 +436,5 @@
 
 "AdvancedOptionsIncludeHiddenItemsName" = "include hidden items";
 "AdvancedOptionsIncludeBundleContentName" = "include bundle content";
-"AdvancedOptionsSearchBrokenAliasesName" = "search for broken aliases";
-"AdvancedOptionsSearchEmptyItemsName" = "search for empty items";
+"AdvancedOptionsSearchBrokenAliasesName" = "look for broken aliases";
+"AdvancedOptionsSearchEmptyItemsName" = "look for empty items";

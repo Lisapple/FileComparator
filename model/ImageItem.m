@@ -24,7 +24,7 @@ static NSArray * _availableOptions = nil;
 {
 	static BOOL initialized = NO;
 	if (!initialized) {
-		_availableOptions = [[NSArray alloc] initWithObjects:@"ImageItemCompareWidthInPixels", @"ImageItemCompareHeightInPixels", @"ImageItemCompareDepth", @"ImageItemCompareOrientation", @"ImageItemCompareHasAlpha", @"ImageItemCompareBitsPerPixel", @"ImageItemCompareBytesPerRow", @"ImageItemCompareExifExposureTime", @"ImageItemCompareExifFNumber", @"ImageItemCompareExifISOSpeedRatings", @"ImageItemCompareExifFlash", @"ImageItemCompareExifFocalLength", @"ImageItemCompareExifUserComment", @"ImageItemCompareExifContrast", @"ImageItemCompareExifSaturation", @"ImageItemCompareExifSharpness", @"ImageItemCompareExifCameraOwnerName", @"ImageItemCompareExifSerialNumber", @"ImageItemCompareGIFLoopCount", @"ImageItemCompareGIFDelayTime", @"ImageItemCompareGPSLatitude", @"ImageItemCompareGPSLongitude", @"ImageItemCompareGPSAltitude", @"ImageItemCompareGPSDateStamp", @"ImageItemComparePNGInterlaceType", @"ImageItemCompareTIFFCompression", @"ImageItemCompareTIFFMake", @"ImageItemCompareTIFFModel", @"ImageItemCompareTIFFSoftware", nil];
+		_availableOptions = @[@"ImageItemCompareWidthInPixels", @"ImageItemCompareHeightInPixels", @"ImageItemCompareDepth", @"ImageItemCompareOrientation", @"ImageItemCompareHasAlpha", @"ImageItemCompareBitsPerPixel", @"ImageItemCompareBytesPerRow", @"ImageItemCompareExifExposureTime", @"ImageItemCompareExifFNumber", @"ImageItemCompareExifISOSpeedRatings", @"ImageItemCompareExifFlash", @"ImageItemCompareExifFocalLength", @"ImageItemCompareExifUserComment", @"ImageItemCompareExifContrast", @"ImageItemCompareExifSaturation", @"ImageItemCompareExifSharpness", @"ImageItemCompareExifCameraOwnerName", @"ImageItemCompareExifSerialNumber", @"ImageItemCompareGIFLoopCount", @"ImageItemCompareGIFDelayTime", @"ImageItemCompareGPSLatitude", @"ImageItemCompareGPSLongitude", @"ImageItemCompareGPSAltitude", @"ImageItemCompareGPSDateStamp", @"ImageItemComparePNGInterlaceType", @"ImageItemCompareTIFFCompression", @"ImageItemCompareTIFFMake", @"ImageItemCompareTIFFModel", @"ImageItemCompareTIFFSoftware"];
 		
 		initialized = YES;
 	}
@@ -32,7 +32,7 @@ static NSArray * _availableOptions = nil;
 
 + (NSArray *)extensions
 {
-	return [NSArray arrayWithObjects:@"png", @"tiff", @"tif", @"jpeg", @"jpg", @"gif", @"jp2", nil];
+	return @[@"png", @"tiff", @"tif", @"jpeg", @"jpg", @"gif", @"jp2"];
 }
 
 + (BOOL)canCompareWithOption:(NSString *)option
@@ -235,7 +235,7 @@ static NSArray * _availableOptions = nil;
 			NSData * data = [[NSData alloc] initWithContentsOfFile:self.path];
 			NSBitmapImageRep * imageRep = [[NSBitmapImageRep alloc] initWithData:data];
 			
-			self.bytesPerRow = [NSNumber numberWithInteger:[imageRep bytesPerRow]];
+			self.bytesPerRow = @([imageRep bytesPerRow]);
 		}
 		
 	} else if ([option isEqualToString:@"ImageItemCompareBytesPerRow"]) {
@@ -244,7 +244,7 @@ static NSArray * _availableOptions = nil;
 			NSData * data = [[NSData alloc] initWithContentsOfFile:self.path];
 			NSBitmapImageRep * imageRep = [[NSBitmapImageRep alloc] initWithData:data];
 			
-			self.bitsPerPixel = [NSNumber numberWithInteger:[imageRep bitsPerPixel]];
+			self.bitsPerPixel = @([imageRep bitsPerPixel]);
 		}
 		
 	} else if ([option isEqualToString:@"ImageItemCompareExifExposureTime"]) {
@@ -404,11 +404,11 @@ static NSArray * _availableOptions = nil;
 
 - (BOOL)isEqualTo:(ImageItem *)anotherItem option:(NSString *)option
 {
-	NSArray * options = [[NSArray alloc] initWithObjects:option, nil];
+	NSArray * options = @[option];
 	NSArray * properties = [ImageItem propertiesForOptions:options];
 	
 	if (properties.count > 0) {
-		NSString * key = [properties objectAtIndex:0];
+		NSString * key = properties.firstObject;
 		return [[self valueForKey:key] isEqualTo:[anotherItem valueForKey:key]];
 	}
 	
@@ -425,7 +425,7 @@ static NSArray * _availableOptions = nil;
 				return NO;
 			}
 		} else {
-			if (![super isEqualTo:anotherItem options:[NSArray arrayWithObject:option]]) {// Else, compare with FileItem class
+			if (![super isEqualTo:anotherItem options:@[option]]) {// Else, compare with FileItem class
 				return NO;
 			}
 		}
@@ -449,7 +449,7 @@ static NSArray * _availableOptions = nil;
 		[[super class] getOptionInfo:option forItem:self];
 		id value = [[super class] valueForOption:option fromItem:self];
 		if (value) {
-			[attributes setObject:value forKey:option];
+			attributes[option] = value;
 		}
 	}
 	
@@ -467,7 +467,7 @@ static NSArray * _availableOptions = nil;
 			[self getOptionInfo:option];
 			id value = [self valueForOption:option];
 			if (value) {
-				[attributes setObject:value forKey:option];
+				attributes[option] = value;
 			}
 		}
 		if (imagePropertiesDictionary) {
@@ -486,10 +486,10 @@ static NSArray * _availableOptions = nil;
 	NSDictionary * itemValues = [self itemValues];
 	NSDictionary * anotherItemValues = [anotherItem itemValues];
 	for (NSString * key in [itemValues allKeys]) {
-		id object = [itemValues objectForKey:key];
-		id anotherObject = [anotherItemValues objectForKey:key];
+		id object = itemValues[key];
+		id anotherObject = anotherItemValues[key];
 		if ([object isEqualTo:anotherObject]) {
-			[commonValues setObject:object forKey:key];
+			commonValues[key] = object;
 		}
 	}
 	
@@ -514,7 +514,7 @@ static NSArray * _availableOptions = nil;
 		
 		id value = [self valueForOption:option];
 		if (value)
-			[attributes setObject:value forKey:option];
+			attributes[option] = value;
 	}
 	
 	if (imagePropertiesDictionary) {

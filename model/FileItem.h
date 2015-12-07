@@ -70,11 +70,7 @@ typedef enum {
 
 @property (nonatomic, strong) NSNumber * isValid;
 
-
-- (NSDictionary *)localizedItemValues;
 - (id)valueForOption:(NSString *)option;
-
-
 
 + (NSDictionary *)commonsValuesForItems:(NSArray *)items;
 
@@ -87,7 +83,7 @@ typedef enum {
 + (void)getOptionInfo:(NSString *)option forItem:(FileItem *)item;
 
 
-- (id)initWithPath:(NSString *)aPath;
+- (instancetype)initWithPath:(NSString *)aPath;
 
 - (void)getOptionItemInfo:(OptionItem *)option;
 
@@ -100,7 +96,7 @@ typedef enum {
 
 - (void)setLocked:(BOOL)locked;
 
-- (BOOL)isHidden;
+@property (NS_NONATOMIC_IOSONLY, getter=isHidden, readonly) BOOL hidden;
 
 - (NSString *)filename;
 
@@ -111,13 +107,13 @@ typedef enum {
 - (NSComparisonResult)compareByLastModificationDate:(FileItem *)anotherItem;
 - (NSComparisonResult)compareByCreationDate:(FileItem *)anotherItem;
 
-- (NSDictionary *)itemValues;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSDictionary *itemValues;
 
 - (NSDictionary *)commonsValuesWithItem:(FileItem *)anotherItem;
 
-- (NSColor *)labelColor;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSColor *labelColor;
 
-- (NSDictionary *)localizedItemValues;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSDictionary *localizedItemValues;
 
 - (NSImage *)thumbnailForSize:(CGSize)size;
 

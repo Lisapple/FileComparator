@@ -11,9 +11,6 @@
 #import "PlaceholderLabel.h"
 
 @interface SummaryView : NSView
-{
-	PlaceholderLabel * __strong numberOfDuplicatesLabel, * __strong totalSizeLabel;
-}
 
 @property (strong) IBOutlet PlaceholderLabel * numberOfDuplicatesLabel, * totalSizeLabel;
 

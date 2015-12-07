@@ -32,7 +32,7 @@ typedef enum _FileType FileType;
 	BOOL extensionBlacklistSelected;
 }
 
-- (id)initWithRootPath:(NSString *)theRootPath;
+- (instancetype)initWithRootPath:(NSString *)theRootPath NS_DESIGNATED_INITIALIZER;
 
 - (BOOL)isHiddenFileAtPath:(NSString *)path;
 - (BOOL)isAliasAtPath:(NSString *)path;

@@ -21,98 +21,94 @@
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-	@autoreleasepool {
+	CGContextRef context = [[NSGraphicsContext currentContext] graphicsPort];
 	
-		CGContextRef context = [[NSGraphicsContext currentContext] graphicsPort];
+	/* Draw image */
+	float ratio = self.image.size.width / self.image.size.height;
+	int width = self.frame.size.height * ratio;
+	
+	int height = self.frame.size.height;
+	
+	int leftMargin = (self.frame.size.width - width) / 2.;
+	float margin = 4;
+	
+	NSRect imageRect = NSMakeRect(leftMargin + margin, margin, width - (2. * margin), height - (2. * margin));
+	
+	// @TODO: Change the effect of layering
+	
+	CGImageRef imageRef = [self.image CGImageForProposedRect:&imageRect
+													 context:[NSGraphicsContext currentContext]
+													   hints:nil];
+	if (_isGroup) {
+		CGContextSaveGState(context);// Save before context transformations
 		
-		/* Draw image */
-		float ratio = self.image.size.width / self.image.size.height;
-		int width = self.frame.size.height * ratio;
+		CGContextSetAlpha(context, 0.666);
 		
-		int height = self.frame.size.height;
+		// First, 4 deg (0.03490658504 rad) rotation and (3, 0) offset
+		CGContextTranslateCTM(context, -2., -5.);
+		CGContextRotateCTM(context, 0.06981317008);
+		CGContextDrawImage(context, NSRectToCGRect(imageRect), imageRef);
 		
-		int leftMargin = (self.frame.size.width - width) / 2.;
-		float margin = 4;
+		// Then, -4 deg (0.03490658504 rad) rotation and (-3, 0) offset
+		CGContextTranslateCTM(context, 4., 15.);// -3 = 3 - 6
+		CGContextRotateCTM(context, -0.2094395102);// -4deg = 4deg - 8deg
+		CGContextDrawImage(context, NSRectToCGRect(imageRect), imageRef);
 		
-		NSRect imageRect = NSMakeRect(leftMargin + margin, margin, width - (2. * margin), height - (2. * margin));
-		
-		// @TODO: Change the effect of layering
-		
-		CGImageRef imageRef = [self.image CGImageForProposedRect:&imageRect
-														 context:[NSGraphicsContext currentContext]
-														   hints:nil];
-		if (_isGroup) {
-			CGContextSaveGState(context);// Save before context transformations
-			
-			CGContextSetAlpha(context, 0.666);
-			
-			// First, 4 deg (0.03490658504 rad) rotation and (3, 0) offset
-			CGContextTranslateCTM(context, -2., -5.);
-			CGContextRotateCTM(context, 0.06981317008);
-			CGContextDrawImage(context, NSRectToCGRect(imageRect), imageRef);
-			
-			// Then, -4 deg (0.03490658504 rad) rotation and (-3, 0) offset
-			CGContextTranslateCTM(context, 4., 15.);// -3 = 3 - 6
-			CGContextRotateCTM(context, -0.2094395102);// -4deg = 4deg - 8deg
-			CGContextDrawImage(context, NSRectToCGRect(imageRect), imageRef);
-			
-			/*
+		/*
 			// And, -1 deg (-0.01745329252 rad) rotation and (1, 0) offset
 			CGContextRotateCTM(context, 0.01745329252);// -1deg = 1deg - 2deg
 			CGContextTranslateCTM(context, 1, 1);// Y: 0 = 1 - 1
 			CGContextDrawImage(context, NSRectToCGRect(imageRect), imageRef);
 			*/
-			
-			CGContextRestoreGState(context);
-		}
 		
-		CGContextDrawImage(context, NSRectToCGRect(imageRect), imageRef);
-		//CGImageRelease(imageRef);
-		
-		[[NSColor clearColor] set];
-		CGContextFillRect(context, NSRectToCGRect(dirtyRect));
-		
-		if (_selected) {
-			
-			float margin = 1.;
-			
-			float borderWidth = width - 2. * margin;
-			float borderHeight = height - 2. * margin;
-			float radius = 8.;
-			
-			CGContextBeginPath(context);
-			CGContextMoveToPoint(context, leftMargin + margin, radius);
-			CGContextAddArcToPoint(context, leftMargin + margin, margin, leftMargin + radius + margin, margin, radius);
-			CGContextAddArcToPoint(context, leftMargin + borderWidth + margin, margin, leftMargin + borderWidth + margin, radius, radius);
-			CGContextAddArcToPoint(context, leftMargin + borderWidth + margin, borderHeight + margin, leftMargin + borderWidth - radius, borderHeight + margin, radius);
-			CGContextAddArcToPoint(context, leftMargin + margin, borderHeight + margin, leftMargin + margin, borderHeight - radius, radius);
-			CGContextClosePath(context);
-			
-			CGPathRef pathRef = CGContextCopyPath(context);
-			
-			[[NSColor colorWithDeviceWhite:0. alpha:0.05] setFill];
-			CGContextFillPath(context);
-			
-			
-			CGContextAddPath(context, pathRef);
-			CGPathRelease(pathRef);
-			
-			CGContextSetLineWidth(context, margin * 2.);
-			[[NSColor darkGrayColor] setStroke];
-			
-			CGContextStrokePath(context);
-		}
-		
-		if (_isOriginal) {
-			
-			NSImage * image = [NSImage imageNamed:@"original.pdf"];
-			CGImageRef imageRef = [image CGImageForProposedRect:NULL
-														context:[NSGraphicsContext currentContext]
-														  hints:nil];
-			CGRect rect = CGRectMake(imageRect.origin.x - 12., 0., 25., 25.);
-			CGContextDrawImage(context, rect, imageRef);
-		}
+		CGContextRestoreGState(context);
+	}
 	
+	CGContextDrawImage(context, NSRectToCGRect(imageRect), imageRef);
+	//CGImageRelease(imageRef);
+	
+	[[NSColor clearColor] set];
+	CGContextFillRect(context, NSRectToCGRect(dirtyRect));
+	
+	if (_selected) {
+		
+		float margin = 1.;
+		
+		float borderWidth = width - 2. * margin;
+		float borderHeight = height - 2. * margin;
+		float radius = 8.;
+		
+		CGContextBeginPath(context);
+		CGContextMoveToPoint(context, leftMargin + margin, radius);
+		CGContextAddArcToPoint(context, leftMargin + margin, margin, leftMargin + radius + margin, margin, radius);
+		CGContextAddArcToPoint(context, leftMargin + borderWidth + margin, margin, leftMargin + borderWidth + margin, radius, radius);
+		CGContextAddArcToPoint(context, leftMargin + borderWidth + margin, borderHeight + margin, leftMargin + borderWidth - radius, borderHeight + margin, radius);
+		CGContextAddArcToPoint(context, leftMargin + margin, borderHeight + margin, leftMargin + margin, borderHeight - radius, radius);
+		CGContextClosePath(context);
+		
+		CGPathRef pathRef = CGContextCopyPath(context);
+		
+		[[NSColor colorWithDeviceWhite:0. alpha:0.05] setFill];
+		CGContextFillPath(context);
+		
+		
+		CGContextAddPath(context, pathRef);
+		CGPathRelease(pathRef);
+		
+		CGContextSetLineWidth(context, margin * 2.);
+		[[NSColor darkGrayColor] setStroke];
+		
+		CGContextStrokePath(context);
+	}
+	
+	if (_isOriginal) {
+		
+		NSImage * image = [NSImage imageNamed:@"original.pdf"];
+		CGImageRef imageRef = [image CGImageForProposedRect:NULL
+													context:[NSGraphicsContext currentContext]
+													  hints:nil];
+		CGRect rect = CGRectMake(imageRect.origin.x - 12., 0., 25., 25.);
+		CGContextDrawImage(context, rect, imageRef);
 	}
 }
 
@@ -158,7 +154,7 @@
 
 @synthesize hitFrame = _hitFrame;
 
-- (id)initWithFrame:(NSRect)frameRect
+- (instancetype)initWithFrame:(NSRect)frameRect
 {
 	if ((self = [super initWithFrame:frameRect])) {
 		

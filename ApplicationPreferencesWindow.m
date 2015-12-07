@@ -80,7 +80,7 @@
 
 @synthesize extensionListLabel;
 
-- (id)initWithContentRect:(NSRect)contentRect styleMask:(NSUInteger)windowStyle backing:(NSBackingStoreType)bufferingType defer:(BOOL)deferCreation
+- (instancetype)initWithContentRect:(NSRect)contentRect styleMask:(NSUInteger)windowStyle backing:(NSBackingStoreType)bufferingType defer:(BOOL)deferCreation
 {
 	if ((self = [super initWithContentRect:contentRect styleMask:windowStyle backing:bufferingType defer:deferCreation])) {
 		[self setDelegate:self];
@@ -95,6 +95,19 @@
 	self.toolbar.selectedItemIdentifier = @"general";
 	[self toolbarDidChangeSelectedTab:nil];
 	
+	blacklistTableView.delegate = self;
+	blacklistTableView.dataSource = self;
+	[blacklistTableView registerForDraggedTypes:@[NSFilenamesPboardType]];
+	blacklistTableView.draggingDelegate = self;
+	
+	extensionTableView.delegate = self;
+	extensionTableView.dataSource = self;
+	
+	[self updateContent];
+}
+
+- (void)windowDidBecomeKey:(NSNotification *)notification
+{
 	[self updateContent];
 }
 
@@ -111,15 +124,8 @@
 	blacklistPaths = [[userDefaults arrayForKey:@"blacklistPaths"] mutableCopy];
 	if (!blacklistPaths)
 		blacklistPaths = [[NSMutableArray alloc] initWithCapacity:3];
-	blacklistTableView.delegate = self;
-	blacklistTableView.dataSource = self;
 	
-	[blacklistTableView registerForDraggedTypes:[NSArray arrayWithObjects:NSFilenamesPboardType, nil]];
-	blacklistTableView.draggingDelegate = self;
-	
-	extensionTableView.delegate = self;
-	extensionTableView.dataSource = self;
-	
+	[blacklistTableView reloadData];
 	[self extensionListDidChange:nil];
 }
 
@@ -258,7 +264,7 @@
 {
 	NSMutableArray * blacklistPathsCopy = [[NSMutableArray alloc] initWithCapacity:blacklistPaths.count];
 	[[blacklistTableView selectedRowIndexes] enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
-		[blacklistPathsCopy addObject:[blacklistPaths objectAtIndex:idx]];
+		[blacklistPathsCopy addObject:blacklistPaths[idx]];
 	}];
 	
 	for (NSString * path in blacklistPathsCopy) {
@@ -313,7 +319,7 @@
 - (IBAction)removeExtension:(id)sender
 {
 	NSInteger selectedRow = [extensionTableView selectedRow];
-	if (selectedRow != NSNotFound) {
+	if (selectedRow != -1) {
 		[[self extensionSourceArray] removeObjectAtIndex:selectedRow];
 		[extensionTableView reloadData];
 	}
@@ -333,14 +339,14 @@
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
 {
 	if (aTableView == blacklistTableView) {
-		NSString * path = [blacklistPaths objectAtIndex:rowIndex];
+		NSString * path = blacklistPaths[rowIndex];
 		if ([aTableColumn.identifier isEqualToString:@"icon"]) {
 			return [[NSWorkspace sharedWorkspace] iconForFile:path];
 		} else {
-			return [blacklistPaths objectAtIndex:rowIndex];
+			return blacklistPaths[rowIndex];
 		}
 	} else {
-		NSString * type = [[self extensionSourceArray] objectAtIndex:rowIndex];
+		NSString * type = [self extensionSourceArray][rowIndex];
 		if ([aTableColumn.identifier isEqualToString:@"icon"]) {
 			return [[NSWorkspace sharedWorkspace] iconForFileType:type];
 		} else {
@@ -356,7 +362,7 @@
 	if (aTableView == extensionTableView) {
 		if (((NSString *)anObject).length > 0) {
 			CFStringRef identifier = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)anObject, NULL);
-			[[self extensionSourceArray] replaceObjectAtIndex:rowIndex withObject:(__bridge NSString *)identifier];
+			self.extensionSourceArray[rowIndex] = (__bridge NSString *)identifier;
 			if (identifier) CFRelease(identifier);
 		} else {
 			[[self extensionSourceArray] removeObjectAtIndex:rowIndex];

@@ -7,7 +7,7 @@
 #endif
 
 #if _DEBUG_MODE_
-#define NSDebugLog(format, ...) NSLog([@"DEBUG: " stringByAppendingString:(format)], ##__VA_ARGS__)
+#define NSDebugLog(format, ...) NSLog(@"DEBUG: " format, ##__VA_ARGS__)
 #else
 #define NSDebugLog(format, ...)
 #endif

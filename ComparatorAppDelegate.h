@@ -25,26 +25,14 @@
 
 @class TransitionView;
 
-/*
-typedef enum {
-	MainButtonTypeRun,
-	MainButtonTypeCancel,
-	MainButtonTypeNew,
-} MainButtonType;
-*/
-
-typedef enum {
+typedef NS_ENUM(NSUInteger, ContentViewType) {
 	ContentViewTypeStart,
 	ContentViewTypeAnalysing,
 	ContentViewTypeResults
-} ContentViewType;
+};
 
 @interface ComparatorAppDelegate : NSObject <NSApplicationDelegate, NSTableViewDelegate, NSTableViewDataSource, NSSplitViewDelegate, NSWindowDelegate>
 {
-	NSPersistentStoreCoordinator * persistentStoreCoordinator;
-	NSManagedObjectModel * managedObjectModel;
-	NSManagedObjectContext * managedObjectContext;
-	
     IBOutlet NSWindow * __strong window;
 	
 	IBOutlet NSTextField * progressLabel;
@@ -71,7 +59,7 @@ typedef enum {
 	NSMutableArray * items;
 	
 	NSMutableArray * fileURLs;
-	NSMutableArray * sourceURLs;
+	NSArray * sourceURLs;
 	
 	//NSMutableArray * emptyFoldersURLs;
 	NSMutableArray * emptyFilesURLs;
@@ -125,7 +113,7 @@ typedef enum {
 
 @property (nonatomic, strong) NSOperationQueue * queue;
 
-@property (nonatomic, strong) NSMutableArray * fileURLs;
+//@property (nonatomic, strong) NSMutableArray * fileURLs;
 
 @property (nonatomic, assign) BOOL working;
 

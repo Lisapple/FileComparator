@@ -132,7 +132,6 @@
 	//NSView * placeholderView;
 	PlaceholderLabel * placeholderLabel;
 	
-	
 	NSMutableArray * _reusableItems;
 }
 
@@ -155,8 +154,8 @@
 - (void)deselectFirstItem;
 - (void)selectAllNonOriginalsItems;
 
-- (GridItem *)selectedItem;
-- (NSArray *)selectedItems;
+@property (NS_NONATOMIC_IOSONLY, readonly, strong) GridItem *selectedItem;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSArray *selectedItems;
 
 - (void)selectItems:(NSArray *)items;
 - (void)unselectItems:(NSArray *)items;
@@ -164,15 +163,12 @@
 - (void)deleteItems:(NSArray *)items;
 - (void)undeleteItems:(NSArray *)items;
 
-- (NSArray *)gridItems;
-- (NSArray *)gridItemsViews;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSArray *gridItems;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSArray *gridItemsViews;
 
 - (void)reloadData;
 
 - (void)setItemsSize:(int)pixels;
-
-- (NSArray *)gridItems;
-- (NSArray *)gridItemsViews;
 
 - (NSSize)sizeForSection:(NSInteger)section;
 

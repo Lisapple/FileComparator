@@ -122,7 +122,7 @@
 {
 	if ([self tableView:tableView rowIsGroupRow:row]) {// For sections
 		return 32.;
-	} if ([[optionItems objectAtIndex:row] isKindOfClass:[NSString class]]) {// For description text
+	} if ([optionItems[row] isKindOfClass:[NSString class]]) {// For description text
 		return 14.;
 	} else {
 		return 17.;// For regular cells
@@ -131,7 +131,7 @@
 
 - (BOOL)tableView:(NSTableView *)tableView rowIsGroupRow:(NSInteger)row
 {
-	return ([[optionItems objectAtIndex:row] isKindOfClass:[Section class]]);
+	return ([optionItems[row] isKindOfClass:[Section class]]);
 }
 
 - (BOOL)tableView:(NSTableView *)aTableView isGroupRow:(NSInteger)row
@@ -148,7 +148,7 @@
 {
 	NSCell * cell = [aTableColumn dataCellForRow:row];
 	
-	if ([[optionItems objectAtIndex:row] isKindOfClass:[Section class]]) {
+	if ([optionItems[row] isKindOfClass:[Section class]]) {
 		
 		/* Hide check box for Section and title for left part */
 		if ([aTableColumn.identifier isEqualToString:@"descriptionLeft-check"]) {
@@ -159,13 +159,13 @@
 			return nil;
 		}
 		
-	} else if ([[optionItems objectAtIndex:row] isKindOfClass:[NSString class]]) {
+	} else if ([optionItems[row] isKindOfClass:[NSString class]]) {
 		NSTextFieldCell * textFieldCell = [[NSTextFieldCell alloc] init];
 		textFieldCell.font = [NSFont systemFontOfSize:10.];
 		textFieldCell.textColor = [NSColor grayColor];
 		return textFieldCell;
 	} else {
-		NSArray * items = [optionItems objectAtIndex:row];
+		NSArray * items = optionItems[row];
 		
 		if (items.count == 1) {
 			if ([aTableColumn.identifier isEqualToString:@"descriptionRight-check"]) {
@@ -181,29 +181,29 @@
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
 {
-	if ([[optionItems objectAtIndex:rowIndex] isKindOfClass:[Section class]]) {
+	if ([optionItems[rowIndex] isKindOfClass:[Section class]]) {
 		
 		if ([aTableColumn.identifier isEqualToString:@"descriptionLeft-check"]) {
 			return nil;
 		} else if ([aTableColumn.identifier isEqualToString:@"descriptionLeft"]) {
-			return [(Section *)[optionItems objectAtIndex:rowIndex] localizedDescriptionString];
+			return [(Section *)optionItems[rowIndex] localizedDescriptionString];
 		}
 		
-	} else if ([[optionItems objectAtIndex:rowIndex] isKindOfClass:[NSString class]]) {
-		NSString * string = [optionItems objectAtIndex:rowIndex];
+	} else if ([optionItems[rowIndex] isKindOfClass:[NSString class]]) {
+		NSString * string = optionItems[rowIndex];
 		return string;
 	} else {
-		NSArray * items = [optionItems objectAtIndex:rowIndex];
+		NSArray * items = optionItems[rowIndex];
 		
 		if (items.count > 0) {
-			OptionItem * item = [items objectAtIndex:0];
+			OptionItem * item = items.firstObject;
 			if ([aTableColumn.identifier isEqualToString:@"descriptionLeft-check"]) {
 				return item.selected;
 			} else if ([aTableColumn.identifier isEqualToString:@"descriptionLeft"]) {
 				return [item localizedDescription];
 			} else {
 				if (items.count > 1) {
-					OptionItem * item = [items objectAtIndex:1];
+					OptionItem * item = items[1];
 					if ([aTableColumn.identifier isEqualToString:@"descriptionRight-check"]) {
 						return item.selected;
 					} else if ([aTableColumn.identifier isEqualToString:@"descriptionRight"]) {
@@ -219,17 +219,17 @@
 
 - (void)tableView:(NSTableView *)aTableView setObjectValue:(id)anObject forTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
 {
-	if ([[optionItems objectAtIndex:rowIndex] isKindOfClass:[Section class]]) {
+	if ([optionItems[rowIndex] isKindOfClass:[Section class]]) {
 		
 	} else {
-		NSArray * items = [optionItems objectAtIndex:rowIndex];
+		NSArray * items = optionItems[rowIndex];
 		
-		OptionItem * item = [items objectAtIndex:0];
+		OptionItem * item = items.firstObject;
 		if ([aTableColumn.identifier isEqualToString:@"descriptionLeft-check"]) {
 			item.selected = anObject;
 		} else if ([aTableColumn.identifier isEqualToString:@"descriptionLeft"]) {
 		} else if (items.count > 1) {
-			OptionItem * item = [items objectAtIndex:1];
+			OptionItem * item = items[1];
 			if ([aTableColumn.identifier isEqualToString:@"descriptionRight-check"]) {
 				item.selected = anObject;
 			} else if ([aTableColumn.identifier isEqualToString:@"descriptionRight"]) {

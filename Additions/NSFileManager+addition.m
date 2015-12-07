@@ -8,6 +8,10 @@
 
 #import "NSFileManager+addition.h"
 
+NSString * const NSFileManagerAdditionSkipLength = @"NSFileManagerAdditionSkipLength";
+NSString * const NSFileManagerAdditionFetchLength = @"NSFileManagerAdditionFetchLength";
+NSString * const NSFileManagerAdditionSkipSizeComparison = @"NSFileManagerAdditionSkipSizeComparison";
+
 @implementation NSFileManager (addition)
 
 - (BOOL)contentsEqualAtPath:(NSString *)path1 andPath:(NSString *)path2 withOptions:(NSDictionary *)options
@@ -68,7 +72,7 @@
 		
 		unsigned long long filesize = filesize1.unsignedLongLongValue;
 		unsigned long long skipLength = filesize * skipRatio;
-		unsigned long long fetchLength = filesize - skipLength;
+		unsigned long long fetchLength = skipLength * skipRatio;
 		
 		BOOL equals = YES;
 		unsigned long long offset = 0.;

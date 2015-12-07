@@ -7,6 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import <CoreText/CoreText.h>
 
 @interface TabItemButton : NSButton
 @end
@@ -25,13 +26,13 @@
 @property (nonatomic, readonly) NSMenu * menu;
 @property (nonatomic, readonly) CGFloat width;
 
-+ (id)itemWithTitle:(NSString *)title;
-+ (id)itemWithMenu:(NSMenu *)menu;
-+ (id)itemWithMenu:(NSMenu *)menu selectedIndex:(NSInteger)index;
++ (instancetype)itemWithTitle:(NSString *)title;
++ (instancetype)itemWithMenu:(NSMenu *)menu;
++ (instancetype)itemWithMenu:(NSMenu *)menu selectedIndex:(NSInteger)index;
 
-- (id)initWithTitle:(NSString *)title;
-- (id)initWithMenu:(NSMenu *)menu;// The title of the item is the title of the first item 
-- (id)initWithMenu:(NSMenu *)menu selectedIndex:(NSInteger)index;// The title of the item is the title of the item a index "index"
+- (instancetype)initWithTitle:(NSString *)title NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithMenu:(NSMenu *)menu NS_DESIGNATED_INITIALIZER;// The title of the item is the title of the first item 
+- (instancetype)initWithMenu:(NSMenu *)menu selectedIndex:(NSInteger)index NS_DESIGNATED_INITIALIZER;// The title of the item is the title of the item a index "index"
 
 - (void)invalidateLayout;
 

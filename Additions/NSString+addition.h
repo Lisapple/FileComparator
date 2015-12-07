@@ -11,15 +11,21 @@
 
 @interface NSString (addition)
 
+// CFString helper
 + (NSString *)stringWithCFString:(CFStringRef)stringRef;
 
-+ (NSString *)pathForDirectory:(NSSearchPathDirectory)directory;
-
+// Localisation helper
 + (NSString *)localizedStringForFileSize:(double)fileSize;
 
+// Layout helper
 - (NSArray *)linesConstraitWithSize:(NSSize)size;
 - (NSArray *)linesConstraitWithSize:(NSSize)constraitSize separatedByString:(NSString *)separation;
 
-- (BOOL)isOnMainVolume;
+// Path helper
++ (NSString *)pathForDirectory:(NSSearchPathDirectory)directory;
+@property (NS_NONATOMIC_IOSONLY, getter=isOnMainVolume, readonly) BOOL onMainVolume;
+
+// Case helper
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *firstLetterCapitalized;
 
 @end

@@ -8,8 +8,9 @@
 
 #import "NSString+addition.h"
 
-
 @implementation NSString (addition)
+
+#pragma mark - CFString helper
 
 + (NSString *)stringWithCFString:(CFStringRef)stringRef
 {
@@ -17,15 +18,7 @@
 	return [[NSString alloc] initWithCString:cString encoding:NSUTF8StringEncoding];
 }
 
-+ (NSString *)pathForDirectory:(NSSearchPathDirectory)directory
-{
-	NSArray * URLs = [[NSFileManager defaultManager] URLsForDirectory:directory inDomains:NSUserDomainMask];
-	if (URLs.count > 0) {
-		return [[(NSURL *)[URLs objectAtIndex:0] path] stringByAppendingString:@"/"];
-	}
-	
-	return nil;
-}
+#pragma mark - Localisation helper
 
 + (NSString *)localizedStringForFileSize:(double)fileSize
 {
@@ -51,6 +44,8 @@
 	return format;
 }
 
+#pragma mark - Layout helper
+
 - (NSArray *)linesConstraitWithSize:(NSSize)constraitSize
 {
 	return [self linesConstraitWithSize:constraitSize separatedByString:@" "];
@@ -69,7 +64,7 @@
 			if (index == 0) _line = string;
 			else _line = [NSString stringWithFormat:@"%@%@%@", line, separation, string];// Add "*separator* *string*" to the current line
 			
-			NSDictionary * attributes = [[NSDictionary alloc] initWithObjectsAndKeys:[NSFont fontWithName:@"Helvetica" size:13.], NSFontAttributeName, nil];
+			NSDictionary * attributes = @{ NSFontAttributeName : [NSFont systemFontOfSize:13.] };
 			NSSize size = [_line sizeWithAttributes:attributes];
 			
 			if (size.width <= constraitSize.width) {// If size fit to constraitSize, add string to current line
@@ -89,10 +84,32 @@
 	return lines;
 }
 
+#pragma mark - Path helper
+
++ (NSString *)pathForDirectory:(NSSearchPathDirectory)directory
+{
+	NSArray * URLs = [[NSFileManager defaultManager] URLsForDirectory:directory inDomains:NSUserDomainMask];
+	if (URLs.count > 0) {
+		return [[(NSURL *)URLs.firstObject path] stringByAppendingString:@"/"];
+	}
+	
+	return nil;
+}
+
 - (BOOL)isOnMainVolume
 {
 	NSString * string = @"/Volume";
 	return [[self substringWithRange:NSMakeRange(0, string.length)] isEqualToString:string];
+}
+
+#pragma mark - Case helper
+
+- (NSString *)firstLetterCapitalized
+{
+	if (self.length > 0) {
+		return [[self substringToIndex:1].uppercaseString stringByAppendingString:[self substringFromIndex:1].lowercaseString];
+	}
+	return @"";
 }
 
 @end

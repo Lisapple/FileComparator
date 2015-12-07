@@ -10,6 +10,6 @@
 
 @interface NSDate (addition)
 
-- (NSString *)string;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *string;
 
 @end

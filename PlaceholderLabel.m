@@ -3,7 +3,7 @@
 //  PlaceholderText
 //
 //  Created by Max on 27/11/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Copyright (c) 2012 Lis@cintosh. All rights reserved.
 //
 
 #import "PlaceholderLabel.h"
@@ -12,26 +12,16 @@
 
 @synthesize title = _title;
 @synthesize backgroundColor = _backgroundColor;
-@synthesize fontHeight = _fontHeight;
 
 - (void)setTitle:(NSString *)title
 {
 	_title = [title copy];
-	
 	[self setNeedsDisplay:YES];
 }
 
 - (void)setBackgroundColor:(NSColor *)backgroundColor
 {
 	_backgroundColor = [backgroundColor copy];
-	
-	[self setNeedsDisplay:YES];
-}
-
-- (void)setFontHeight:(CGFloat)fontHeight
-{
-	_fontHeight = fontHeight;
-	
 	[self setNeedsDisplay:YES];
 }
 
@@ -42,8 +32,7 @@
 	
 	// @TODO: cache the generated images
 	
-	CGFloat fontHeight = (_fontHeight > 0)? _fontHeight : 24.;
-	NSSize size = [_title sizeWithAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[NSFont boldSystemFontOfSize:fontHeight], NSFontAttributeName, nil]];
+	NSSize size = [_title sizeWithAttributes:@{NSFontAttributeName: [NSFont boldSystemFontOfSize:24.]}];
 	
 	CGContextRef context = [NSGraphicsContext currentContext].graphicsPort;
 	
@@ -82,24 +71,35 @@
 	if (gradient) CGGradientRelease(gradient);
 	
 	/* Draw the text into a mask image */
-	CGContextRef textContextRef = CGBitmapContextCreate(NULL,
-														(size_t)width,
-														(size_t)height,
-														8,
-														0,
-														colorSpace,
-														kCGImageAlphaPremultipliedLast);
+	CGContextRef textContextRef = CGBitmapContextCreate(NULL, (size_t)width, (size_t)height,
+														8, 0,
+														colorSpace, kCGImageAlphaPremultipliedLast);
+	CGFloat fontHeight = 20.;
 	
-	const CGFloat text_components[4] = {1., 1., 1., 1.};
+#define USE_CORE_TEXT 1
+#if USE_CORE_TEXT
+	NSFont * font = [NSFont systemFontOfSize:fontHeight];
+	NSDictionary * attributes = @{ NSFontAttributeName : font, NSForegroundColorAttributeName : [NSColor whiteColor] };
+	NSAttributedString * string = [[NSAttributedString alloc] initWithString:_title attributes:attributes];
+	CTLineRef line = CTLineCreateWithAttributedString((__bridge CFAttributedStringRef)string);
+	
+	CGRect bounds = CTLineGetBoundsWithOptions(line, 0);
+	CGContextTranslateCTM(textContextRef,
+						  ceilf((width - bounds.size.width) / 2),
+						  ceilf((height - bounds.size.height) / 2) + 2);
+	CTLineDraw(line, textContextRef);
+	CFRelease(line);
+#else
+	const CGFloat text_components[4] = { 1., 1., 1., 1. };
 	CGColorRef color = CGColorCreate(colorSpace, text_components);
 	CGContextSetFillColorWithColor(textContextRef, color);
 	CGColorRelease(color);
-	
 	CGColorSpaceRelease(colorSpace);
 	
-	CGContextSelectFont(textContextRef, "Helvetica-Bold", fontHeight, kCGEncodingMacRoman);
+	NSString * systemFontName = [NSFont systemFontOfSize:10.].fontName;
+	CGContextSelectFont(textContextRef, systemFontName.UTF8String, fontHeight, kCGEncodingMacRoman);
 	
-	const char * string = [_title UTF8String];
+	const char * string = _title.UTF8String;
 	unsigned long length = strlen(string);
 	
 	CGPoint oldPosition = CGContextGetTextPosition(textContextRef);
@@ -115,20 +115,18 @@
 	CGContextSetTextDrawingMode(textContextRef, kCGTextFill);
 	
 	CGContextShowTextAtPoint(textContextRef, textX, textY, string, length);
+#endif
 	
 	CGImageRef textImageRef = CGBitmapContextCreateImage(textContextRef);
 	if (textContextRef) CGContextRelease(textContextRef);
 	
 	
 	CGDataProviderRef provider = CGImageGetDataProvider(textImageRef);
-	CGImageRef maskTextImageRef = CGImageMaskCreate((size_t)width,
-													(size_t)height,
+	CGImageRef maskTextImageRef = CGImageMaskCreate((size_t)width, (size_t)height,
 													CGImageGetBitsPerComponent(textImageRef),
 													CGImageGetBitsPerPixel(textImageRef),
 													CGImageGetBytesPerRow(textImageRef),
-													provider,
-													NULL,
-													false);
+													provider, NULL, false);
 	if (textImageRef) CGImageRelease(textImageRef);
 	
 	CGColorRef shadowColor = CGColorCreateGenericRGB(0., 0., 0., 0.5);
@@ -137,6 +135,8 @@
 	
 	CGContextDrawImage(context, frame, maskTextImageRef);
 	if (maskTextImageRef) CGImageRelease(maskTextImageRef);
+	
+	CGColorSpaceRelease(colorSpace);
 }
 
 @end

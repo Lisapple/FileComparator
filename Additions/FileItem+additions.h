@@ -10,7 +10,7 @@
 
 @interface FileItem (additions)
 
-- (BOOL)moveToTrash;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL moveToTrash;
 
 - (BOOL)moveToFolder:(NSString *)folderPath;
 

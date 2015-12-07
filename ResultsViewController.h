@@ -61,18 +61,18 @@
 @end
 
 
-typedef enum {
+typedef NS_ENUM(unsigned int, SourceType) {
 	SourceTypeDuplicates = 0,
 	SourceTypeEmptyItems,
 	SourceTypeBrokenAliases,
-} SourceType;
+};
 
-typedef enum {
+typedef NS_ENUM(unsigned int, DuplicateType) {
 	DuplicateTypeAll = 0,
 	DuplicateTypeFiles = 2,/* Start at two to skip the separator between "All Duplicates" and "File Duplicates" */
 	DuplicateTypeImages,
 	DuplicateTypeAudioFiles
-} DuplicateType;
+};
 
 @interface ResultsViewController : NSViewController <NSTabViewDelegate, QLPreviewPanelDelegate, QLPreviewPanelDataSource, GridViewDelegate, GridViewDataSource, NSSplitViewDelegate, NSTableViewDelegate, NSTableViewDataSource, TabViewDelegate>
 {
@@ -240,7 +240,7 @@ typedef enum {
 //- (IBAction)replaceAllItems:(id)sender;
 
 
-- (NSInteger)currentTaskCount;
+@property (NS_NONATOMIC_IOSONLY, readonly) NSInteger currentTaskCount;
 
 - (FileItem *)originalItemForGroup:(NSManagedObject *)group;
 

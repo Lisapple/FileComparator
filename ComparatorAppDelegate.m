@@ -21,6 +21,13 @@
 #import "SandboxHelper.h"
 
 @interface ComparatorAppDelegate ()
+{
+	NSInteger numberOfFinishedGetFilesOperations;
+}
+
+@property (atomic, strong) NSPersistentStoreCoordinator * persistentStoreCoordinator;
+@property (atomic, strong) NSManagedObjectModel * managedObjectModel;
+@property (atomic, strong) NSManagedObjectContext * managedObjectContext;
 
 - (BOOL)startPreventingFromSleeping;
 - (void)stopPreventingFromSleeping;
@@ -46,8 +53,6 @@
 @synthesize resultsViewController = _resultsViewController;
 
 @synthesize queue;
-
-@synthesize fileURLs;
 
 @synthesize working = _working;
 
@@ -114,7 +119,6 @@ const double kBackgroundPriority = 1;
 		[imageView addSubview:aProgressIndicator];
 		
 		[[NSApp dockTile] setContentView:imageView];
-		
 		[[NSApp dockTile] display];
 	}
 }
@@ -122,15 +126,6 @@ const double kBackgroundPriority = 1;
 - (BOOL)applicationShouldHandleReopen:(NSApplication *)theApplication hasVisibleWindows:(BOOL)hasVisibleWindows
 {
 	[window makeKeyAndOrderFront:nil];
-	
-	/*
-	 if (hasVisibleWindows == NO) {// If no visible windows, re-open the main window
-	 [window makeKeyAndOrderFront:nil];
-	 }
-	 */
-	
-	NSDebugLog(@"applicationShouldHandleReopen:hasVisibleWindows:");
-	
 	return YES;
 }
 
@@ -175,11 +170,11 @@ const double kBackgroundPriority = 1;
 
 - (NSManagedObjectModel *)managedObjectModel
 {
-    if (managedObjectModel)
-		return managedObjectModel;
+    if (_managedObjectModel)
+		return _managedObjectModel;
 	
-    managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:nil];
-    return managedObjectModel;
+    _managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:nil];
+    return _managedObjectModel;
 }
 
 
@@ -190,10 +185,10 @@ const double kBackgroundPriority = 1;
  if necessary.)
  */
 
-- (NSPersistentStoreCoordinator *) persistentStoreCoordinator
+- (NSPersistentStoreCoordinator *)persistentStoreCoordinator
 {
-    if (persistentStoreCoordinator)
-		return persistentStoreCoordinator;
+    if (_persistentStoreCoordinator)
+		return _persistentStoreCoordinator;
 	
     NSManagedObjectModel * model = [self managedObjectModel];
     if (!model) {
@@ -202,8 +197,8 @@ const double kBackgroundPriority = 1;
         return nil;
     }
 	
-	persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:model];
-	if (!persistentStoreCoordinator) {
+	_persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:model];
+	if (!_persistentStoreCoordinator) {
 		[NSException raise:@"NSComparatorAppDelegate"
 					format:@"Persitistent store coordinator can't be created from model: %@", model];
 		return nil;
@@ -211,19 +206,19 @@ const double kBackgroundPriority = 1;
 	
 	NSError *error = nil;
 	NSString * storeType = NSInMemoryStoreType;
-	NSPersistentStore * persistentStore = [persistentStoreCoordinator addPersistentStoreWithType:storeType
+	NSPersistentStore * persistentStore = [_persistentStoreCoordinator addPersistentStoreWithType:storeType
 																				   configuration:nil
 																							 URL:nil
 																						 options:nil
 																						   error:&error];
     if (!persistentStore){
         [[NSApplication sharedApplication] presentError:error];
-		persistentStoreCoordinator = nil;
+		_persistentStoreCoordinator = nil;
 		
         return nil;
     }
 	
-    return persistentStoreCoordinator;
+    return _persistentStoreCoordinator;
 }
 
 /**
@@ -234,8 +229,8 @@ const double kBackgroundPriority = 1;
 // @TODO: Create a global class to get and save the managedObjectContext
 - (NSManagedObjectContext *)managedObjectContext
 {
-    if (managedObjectContext)
-		return managedObjectContext;
+    if (_managedObjectContext)
+		return _managedObjectContext;
 	
     NSPersistentStoreCoordinator * coordinator = [self persistentStoreCoordinator];
     if (!coordinator) {
@@ -249,12 +244,12 @@ const double kBackgroundPriority = 1;
         return nil;
     }
 	
-    managedObjectContext = [[NSManagedObjectContext alloc] init];
-    [managedObjectContext setPersistentStoreCoordinator:coordinator];
+    _managedObjectContext = [[NSManagedObjectContext alloc] init];
+    [_managedObjectContext setPersistentStoreCoordinator:coordinator];
 	
-	[managedObjectContext setUndoManager:nil];
+	[_managedObjectContext setUndoManager:nil];
 	
-    return managedObjectContext;
+    return _managedObjectContext;
 }
 
 /**
@@ -297,15 +292,17 @@ const double kBackgroundPriority = 1;
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
 {
-	for (NSPersistentStore * persistentStore in [persistentStoreCoordinator persistentStores]) {
-		[persistentStoreCoordinator removePersistentStore:persistentStore error:NULL];
-		NSURL * url = [persistentStore URL];
-		[[NSFileManager defaultManager] removeItemAtURL:url error:NULL];
-	}
-	
-	[OptionItem save];
-	
-	return NSTerminateNow;
+	dispatch_async(dispatch_get_main_queue(), ^{
+		for (NSPersistentStore * persistentStore in _persistentStoreCoordinator.persistentStores) {
+			[_persistentStoreCoordinator removePersistentStore:persistentStore error:NULL];
+			NSURL * url = [persistentStore URL];
+			[[NSFileManager defaultManager] removeItemAtURL:url error:NULL];
+		}
+		
+		[OptionItem save];
+		[sender replyToApplicationShouldTerminate:YES];
+	});
+	return NSTerminateLater;
 }
 
 #pragma mark -
@@ -355,9 +352,9 @@ const double kBackgroundPriority = 1;
 
 - (IBAction)startAction:(id)sender
 {
-	NSURL * sourceURL = _mainViewController.URL;
-	NSLog(@"sourcesURL: %@", sourceURL);
-	if (!sourceURL) {
+	sourceURLs = _mainViewController.resolvedSourceURLs;
+	NSDebugLog(@"sourcesURLs: %@", [[sourceURLs valueForKey:@"path"] componentsJoinedByString:@", "]);
+	if (sourceURLs.count == 0) {
 		[[NSAlert alertWithMessageText:NSLocalizedString(@"No files selected.", nil)
 						 defaultButton:NSLocalizedString(@"OK", nil)
 					   alternateButton:nil
@@ -366,28 +363,34 @@ const double kBackgroundPriority = 1;
 		return ;
 	}
 	
+	// Delete the managed context
+	[_managedObjectContext reset];
+	_managedObjectContext = nil;
 	
-	/* Delete the managed context */
-	[managedObjectContext reset];
-	managedObjectContext = nil;
-	
-	persistentStoreCoordinator = nil;
+	for (NSPersistentStore * persistentStore in _persistentStoreCoordinator.persistentStores) {
+		[_persistentStoreCoordinator removePersistentStore:persistentStore error:NULL];
+		NSURL * url = [persistentStore URL];
+		[[NSFileManager defaultManager] removeItemAtURL:url error:NULL];
+	}
+	_persistentStoreCoordinator = nil;
 	
 	[self managedObjectContext];
 	
 	_cancelled = NO;
 	
-	/* Start the file operation */
-	NSOperationQueue * aQueue = [[NSOperationQueue alloc] init];
-	self.queue = aQueue;
+	// Start the file operation
+	self.queue = [[NSOperationQueue alloc] init];
 	
 	if ([SandboxHelper sandboxActived]) {
 		BOOL started = [SandboxHelper startAccessingSecurityScopedSources];
-		if (!started) NSLog(@"startAccessingSecurityScopedSources failed");
+		if (!started) NSDebugLog(@"startAccessingSecurityScopedSources failed");
 	}
 	
-	GetFilesOperation * filesOperation = [[GetFilesOperation alloc] initWithRootPath:_mainViewController.URL.path];
-	[queue addOperation:filesOperation];
+	numberOfFinishedGetFilesOperations = 0;
+	for (NSURL * resolvedSourceURL in sourceURLs) {
+		GetFilesOperation * filesOperation = [[GetFilesOperation alloc] initWithRootPath:resolvedSourceURL.path];
+		[queue addOperation:filesOperation];
+	}
 	
 	[progressIndicator startAnimation:nil];
 	
@@ -427,10 +430,12 @@ const double kBackgroundPriority = 1;
 
 - (void)operationDidFinish:(NSNotification *)aNotification
 {
-	if ([SandboxHelper sandboxActived])
-		[SandboxHelper stopAccessingSecurityScopedSources];
-	
-	[self compareAllItems];
+	++numberOfFinishedGetFilesOperations;
+	if (numberOfFinishedGetFilesOperations == sourceURLs.count) {
+		if ([SandboxHelper sandboxActived])
+			[SandboxHelper stopAccessingSecurityScopedSources];
+		[self compareAllItems];
+	}
 }
 
 #pragma mark -
@@ -440,20 +445,17 @@ const double kBackgroundPriority = 1;
 {
 	NSSavePanel * savePanel = [NSSavePanel savePanel];
 	[savePanel setNameFieldStringValue:NSLocalizedString(@"Untitled.txt", nil)];
-	[savePanel setAllowedFileTypes:[NSArray arrayWithObject:@"txt"]];
+	[savePanel setAllowedFileTypes:@[@"txt"]];
 	[savePanel setPrompt:NSLocalizedString(@"Export", nil)];
 	
 	[savePanel beginWithCompletionHandler:^(NSInteger result) {
 		
-		NSMutableString * string = [[NSMutableString alloc] initWithCapacity:10];
-		
+		NSMutableString * string = [[NSMutableString alloc] initWithCapacity:1000];
 		if (duplicatesArrays.count > 0) [string appendString:@"Duplicates Items:\n"];
 		
 		for (NSArray * array in duplicatesArrays) {
 			if (array.count > 0) {
-				
 				for (FileItem * item in array) [string appendFormat:@"%@\n", item.path];
-				
 				[string appendString:@"\n"];
 			}
 		}
@@ -472,7 +474,7 @@ const double kBackgroundPriority = 1;
 {
 	NSSavePanel * savePanel = [NSSavePanel savePanel];
 	[savePanel setNameFieldStringValue:NSLocalizedString(@"Untitled.xml", nil)];
-	[savePanel setAllowedFileTypes:[NSArray arrayWithObject:@"xml"]];
+	[savePanel setAllowedFileTypes:@[@"xml"]];
 	[savePanel setPrompt:NSLocalizedString(@"Export", nil)];
 	
 	[savePanel beginWithCompletionHandler:^(NSInteger result) {
@@ -589,15 +591,10 @@ const double kBackgroundPriority = 1;
 - (void)setWorking:(BOOL)working
 {
 	_working = working;
-	
 	if (working) {
-		
 		NSUInteger windowMask = self.window.styleMask;
-		
 		windowMask &= ~NSClosableWindowMask;
-		
 		self.window.styleMask = windowMask;
-		
 	} else {
 		self.window.styleMask |= NSClosableWindowMask;
 	}
@@ -616,7 +613,7 @@ const double kBackgroundPriority = 1;
 												   &preventSleepID);
 	return (success == kIOReturnSuccess);
 #else
-	return NO;// @TODO: implement a compatible way with Snow Leopard
+	return NO;
 #endif
 }
 
@@ -642,7 +639,7 @@ const double kBackgroundPriority = 1;
 	[deselectAllMenuItem setEnabled:(type == ContentViewTypeResults)];// @TODO: Active only if we show the gridView
 	[deleteSelectedMenuItem setEnabled:(type == ContentViewTypeResults)];// @TODO: Active only if we show the grdiView and items are selected
 	
-	[quickLookMenuItem setEnabled:((type == ContentViewTypeStart && _mainViewController.URL) || type == ContentViewTypeResults)];
+	[quickLookMenuItem setEnabled:((type == ContentViewTypeStart && _mainViewController.resolvedSourceURLs.count) || type == ContentViewTypeResults)];
 }
 
 - (void)setContentViewType:(ContentViewType)type
@@ -683,7 +680,7 @@ const double kBackgroundPriority = 1;
 
 - (BOOL)acceptsPreviewPanelControl:(QLPreviewPanel *)panel;
 {
-	return ((contentViewType == ContentViewTypeStart && _mainViewController.URL)
+	return ((contentViewType == ContentViewTypeStart && _mainViewController.resolvedSourceURLs.count)
 			|| contentViewType == ContentViewTypeResults);
 }
 
@@ -717,11 +714,8 @@ const double kBackgroundPriority = 1;
 - (void)compareType:(NSString *)type forGroup:(NSString *)groupType withOptions:(NSArray *)options
 {
 	/* Don't use the same context over threads, create a context for each thread with the same persistent store */
-	NSPersistentStoreCoordinator * coordinator = [[NSApp delegate] persistentStoreCoordinator];
-	NSAssert(coordinator != nil, @"coordinator == nil");
-	
 	NSManagedObjectContext * context = [[NSManagedObjectContext alloc] init];
-	[context setPersistentStoreCoordinator:coordinator];
+	[context setPersistentStoreCoordinator:self.persistentStoreCoordinator];
 	[context setUndoManager:nil];
 	
 	NSDebugLog(@"start %@ comparaison (with options: %@)...", type, [options componentsJoinedByString:@", "]);
@@ -790,7 +784,7 @@ const double kBackgroundPriority = 1;
 			
 			for (FileItem * item in groups) {
 				if ([object isEqualTo:item options:options]) {
-					[[item mutableSetValueForKey:@"items"] addObject:object];
+					[[item primitiveValueForKey:@"items"] addObject:object];
 					return YES;// If we can find a group, return YES...
 				}
 			}
@@ -804,7 +798,7 @@ const double kBackgroundPriority = 1;
 				[group setValue:value forKey:property];
 			}
 			
-			[[group mutableSetValueForKey:@"items"] addObject:object];
+			[[group primitiveValueForKey:@"items"] addObject:object];
 			
 			[groups addObject:group];
 		}
@@ -829,13 +823,12 @@ const double kBackgroundPriority = 1;
 	[progressIndicator startAnimation:nil];
 	
 	
-	[coordinator lock];
-	NSError * error = nil;
-	if (![context save:&error]) {
-		NSLog(@"context save error: %@", [error localizedDescription]);
-	}
-	[coordinator unlock];
-	
+	[self.persistentStoreCoordinator performBlockAndWait:^{
+		NSError * error = nil;
+		if (![context save:&error]) {
+			NSLog(@"context save error: %@", [error localizedDescription]);
+		}
+	}];
 	
 	NSDebugLog(@"...end! %lu groups", groups.count);
 }
@@ -849,14 +842,11 @@ const double kBackgroundPriority = 1;
 
 - (void)automaticallyCompareType:(NSString *)type forGroup:(NSString *)groupType
 {
-	NSArray * options = [NSArray arrayWithObjects:@"FileItemCompareSize", @"FileItemCompareData", nil];
+	NSArray * options = @[@"FileItemCompareSize", @"FileItemCompareData"];
 	
 	/* Don't use the same context over threads, create a context for each thread with the same persistent store */
-	NSPersistentStoreCoordinator * coordinator = [[NSApp delegate] persistentStoreCoordinator];
-	NSAssert(coordinator != nil, @"coordinator == nil");
-	
 	NSManagedObjectContext * context = [[NSManagedObjectContext alloc] init];
-	[context setPersistentStoreCoordinator:coordinator];
+	[context setPersistentStoreCoordinator:self.persistentStoreCoordinator];
 	[context setUndoManager:nil];
 	
 	NSDebugLog(@"start %@ comparaison (with options: %@)...", type, [options componentsJoinedByString:@", "]);
@@ -914,19 +904,22 @@ const double kBackgroundPriority = 1;
 		
 		if (object) {
 			
-			updateIndex();
-			updateFilenameLabel(object.path);
+			dispatch_async(dispatch_get_main_queue(), ^{
+				updateIndex();
+				if (object.path) {
+					updateFilenameLabel(object.path);
+				}
+			});
 			
 			/*
 			 Get the current group (the group where informations are same as the input object
 			 If we find the current group, add input object at the end of the array of the group content (from the groupsContent)
 			 Else, create a new group and a new array content into the groupsContent array, then add the input object into groupsContent
 			 */
-			
 			for (NSManagedObject * group in groups) {
-				NSMutableSet * set = [group mutableSetValueForKey:@"items"];
-				NSEnumerator * enumerator = [set objectEnumerator];
-				FileItem * firstItem = [enumerator nextObject];
+				// Don't call "mutableSetValueForKey:" to avoid useless KVO allocations
+				NSMutableSet * set = (NSMutableSet *)[group primitiveValueForKey:@"items"];
+				FileItem * firstItem = set.anyObject;
 				if (firstItem && [object isEqualTo:firstItem options:options]) {
 					[set addObject:object];
 					return YES;// If we can find a group, return YES...
@@ -942,7 +935,7 @@ const double kBackgroundPriority = 1;
 				[group setValue:value forKey:property];
 			}
 			
-			[[group mutableSetValueForKey:@"items"] addObject:object];
+			[[group primitiveValueForKey:@"items"] addObject:object];
 			
 			[groups addObject:group];
 		}
@@ -966,113 +959,103 @@ const double kBackgroundPriority = 1;
 	[progressIndicator setIndeterminate:YES];
 	[progressIndicator startAnimation:nil];
 	
-	
-	[coordinator lock];
-	NSError * error = nil;
-	if (![context save:&error]) {
-		NSLog(@"context save error: %@", [error localizedDescription]);
-	}
-	[coordinator unlock];
-	
+	[self.persistentStoreCoordinator performBlockAndWait:^{
+		NSError * error = nil;
+		if (![context save:&error]) {
+			NSLog(@"context save error: %@", [error localizedDescription]);
+		}
+	}];
 	
 	NSDebugLog(@"...end! %lu groups", groups.count);
 }
 
 - (void)compareAllItems
 {
-	@autoreleasepool {
+	/* Disable the run button (to avoid double run) */
+	dispatch_async(dispatch_get_main_queue(), ^{ [_mainViewController.runButton setEnabled:NO]; });
+	
+	if ([OptionItem useAutomaticComparaison]) {
 		
-		/* Disable the run button (to avoid double run) */
-		[_mainViewController.runButton setEnabled:NO];
-		
-		if ([OptionItem useAutomaticComparaison]) {
-			
-			/* Automatic mode need to read data from file, allow it with sandbox */
-			if ([SandboxHelper sandboxActived]) {
-				BOOL started = [SandboxHelper startAccessingSecurityScopedSources];
-				if (!started) NSLog(@"startAccessingSecurityScopedSources failed");
-			}
-			
-			dispatch_group_t group = dispatch_group_create();
-			dispatch_queue_t dispatch_queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
-			
-			dispatch_group_async(group, dispatch_queue, ^{
-				_progressLabel.stringValue = @"Comparing Files";
-				[self automaticallyCompare:@"FileItem"];
-				
-				_progressLabel.stringValue = @"Comparing Image";
-				[self automaticallyCompare:@"ImageItem"];
-				
-				_progressLabel.stringValue = @"Comparing Audio Files";
-				[self automaticallyCompare:@"AudioItem"];
-			});
-			
-			dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
-			
-			if ([SandboxHelper sandboxActived])
-				[SandboxHelper stopAccessingSecurityScopedSources];
-			
-		} else {
-			
-			NSArray * options = [OptionItem checkedItems];
-			NSMutableArray * fileOptions = [[NSMutableArray alloc] initWithCapacity:options.count];
-			NSMutableArray * imageOptions = [[NSMutableArray alloc] initWithCapacity:options.count];
-			NSMutableArray * audioOptions = [[NSMutableArray alloc] initWithCapacity:options.count];
-			
-			for (OptionItem * option in options) {
-				if ([ImageItem canCompareWithOption:option.identifier]) {
-					[imageOptions addObject:option.identifier];
-				} else if ([AudioItem canCompareWithOption:option.identifier]) {
-					[audioOptions addObject:option.identifier];
-				} else {
-					NSDebugLog(@"adding %@", option.identifier);
-					[fileOptions addObject:option.identifier];
-				}
-			}
-			
-			/* Compare images and audio files only if we have some specifics options checked */
-			if (imageOptions.count > 0) {
-				[imageOptions addObjectsFromArray:fileOptions];
-			}
-			
-			if (audioOptions.count > 0) {
-				[audioOptions addObjectsFromArray:fileOptions];
-			}
-			
-			dispatch_group_t group = dispatch_group_create();
-			dispatch_queue_t dispatch_queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
-			
-			dispatch_group_async(group, dispatch_queue, ^{
-				if (fileOptions.count > 0) {
-					_progressLabel.stringValue = NSLocalizedString(@"Comparing Files...", nil);
-					[self compare:@"FileItem" withOptions:fileOptions];
-				}
-				
-				_progressLabel.stringValue = NSLocalizedString(@"Comparing Images...", nil);
-				if (imageOptions.count > 0) {// If we have images specific's options, compare ImageItem separately...
-					[self compare:@"ImageItem" withOptions:imageOptions];
-				} else {// ... else, compare image and add groups to file item's groups
-					if (fileOptions.count > 0)
-						[self compareType:@"ImageItem" forGroup:@"FileItemGroup" withOptions:fileOptions];
-				}
-				
-				_progressLabel.stringValue = NSLocalizedString(@"Comparing Audio Files...", nil);
-				if (audioOptions.count > 0) {// *Same as image items*
-					[self compare:@"AudioItem" withOptions:audioOptions];
-				} else {
-					if (fileOptions.count > 0)
-						[self compareType:@"AudioItem" forGroup:@"FileItemGroup" withOptions:fileOptions];
-				}
-			});
-			
-			dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
-			
+		/* Automatic mode need to read data from file, allow it with sandbox */
+		if ([SandboxHelper sandboxActived]) {
+			BOOL started = [SandboxHelper startAccessingSecurityScopedSources];
+			if (!started) NSLog(@"startAccessingSecurityScopedSources failed");
 		}
 		
-		_currentFileLabel.stringValue = @"";
+		dispatch_group_t group = dispatch_group_create();
+		dispatch_queue_t dispatch_queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
 		
-		if (_cancelled) {
+		dispatch_group_async(group, dispatch_queue, ^{
+			_progressLabel.stringValue = @"Comparing Files";
+			[self automaticallyCompare:@"FileItem"];
 			
+			_progressLabel.stringValue = @"Comparing Image";
+			[self automaticallyCompare:@"ImageItem"];
+			
+			_progressLabel.stringValue = @"Comparing Audio Files";
+			[self automaticallyCompare:@"AudioItem"];
+		});
+		
+		dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+		
+		if ([SandboxHelper sandboxActived])
+			[SandboxHelper stopAccessingSecurityScopedSources];
+		
+	} else {
+		
+		NSArray * options = [OptionItem checkedItems];
+		NSMutableArray * fileOptions = [[NSMutableArray alloc] initWithCapacity:options.count];
+		NSMutableArray * imageOptions = [[NSMutableArray alloc] initWithCapacity:options.count];
+		NSMutableArray * audioOptions = [[NSMutableArray alloc] initWithCapacity:options.count];
+		
+		for (OptionItem * option in options) {
+			if ([ImageItem canCompareWithOption:option.identifier]) {
+				[imageOptions addObject:option.identifier];
+			} else if ([AudioItem canCompareWithOption:option.identifier]) {
+				[audioOptions addObject:option.identifier];
+			} else {
+				NSDebugLog(@"adding %@", option.identifier);
+				[fileOptions addObject:option.identifier];
+			}
+		}
+		
+		// Compare images and audio files only if we have some specifics options checked
+		if (imageOptions.count > 0) [imageOptions addObjectsFromArray:fileOptions];
+		if (audioOptions.count > 0) [audioOptions addObjectsFromArray:fileOptions];
+		
+		dispatch_group_t group = dispatch_group_create();
+		dispatch_queue_t dispatch_queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
+		
+		dispatch_group_async(group, dispatch_queue, ^{
+			if (fileOptions.count > 0) {
+				_progressLabel.stringValue = NSLocalizedString(@"Comparing Files...", nil);
+				[self compare:@"FileItem" withOptions:fileOptions];
+			}
+			
+			_progressLabel.stringValue = NSLocalizedString(@"Comparing Images...", nil);
+			if (imageOptions.count > 0) {// If we have images specific's options, compare ImageItem separately...
+				[self compare:@"ImageItem" withOptions:imageOptions];
+			} else {// ... else, compare image and add groups to file item's groups
+				if (fileOptions.count > 0)
+					[self compareType:@"ImageItem" forGroup:@"FileItemGroup" withOptions:fileOptions];
+			}
+			
+			_progressLabel.stringValue = NSLocalizedString(@"Comparing Audio Files...", nil);
+			if (audioOptions.count > 0) {// *Same as image items*
+				[self compare:@"AudioItem" withOptions:audioOptions];
+			} else {
+				if (fileOptions.count > 0)
+					[self compareType:@"AudioItem" forGroup:@"FileItemGroup" withOptions:fileOptions];
+			}
+		});
+		
+		dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+	}
+	
+	dispatch_async(dispatch_get_main_queue(), ^{ _currentFileLabel.stringValue = @""; });
+	
+	if (_cancelled) {
+		dispatch_async(dispatch_get_main_queue(), ^{
 			[_mainViewController.runButton setEnabled:YES];
 			
 			NSDebugLog(@"comparaison cancelled!");
@@ -1080,27 +1063,24 @@ const double kBackgroundPriority = 1;
 			NSUInteger styleMask = window.styleMask;
 			styleMask |= NSClosableWindowMask;// Re-add the close button
 			[window setStyleMask:styleMask];
-			
-			return ;
-		}
-		
-		/* Don't use the same context over threads, create a context for each thread with the same persistent store */
-		NSPersistentStoreCoordinator * coordinator = [[NSApp delegate] persistentStoreCoordinator];
-		NSAssert(coordinator != nil, @"coordinator == nil");
-		
-		NSManagedObjectContext * context = [[NSManagedObjectContext alloc] init];
-		[context setPersistentStoreCoordinator:coordinator];
-		[context setUndoManager:nil];
-		
-		NSEntityDescription * entity = [NSEntityDescription entityForName:@"FileItem" inManagedObjectContext:context];
-		NSFetchRequest * request = [[NSFetchRequest alloc] init];
-		[request setEntity:entity];
-		
+		});
+		return ;
+	}
+	
+	/* Don't use the same context over threads, create a context for each thread with the same persistent store */
+	NSManagedObjectContext * context = [[NSManagedObjectContext alloc] init];
+	context.persistentStoreCoordinator = self.persistentStoreCoordinator;
+	context.undoManager = nil;
+	
+	NSFetchRequest * request = [[NSFetchRequest alloc] init];
+	request.entity = [NSEntityDescription entityForName:@"FileItem" inManagedObjectContext:context];
+	
+	dispatch_async(dispatch_get_main_queue(), ^{
 		/* Find empty items */
 		if ([OptionItem shouldFindEmptyItems]) {
 			_progressLabel.stringValue = NSLocalizedString(@"Finding Empty Items...", nil);
 			
-			[request setPredicate:[NSPredicate predicateWithFormat:@"fileSize == 0 && isBroken == NO && path != NULL"]];
+			request.predicate = [NSPredicate predicateWithFormat:@"fileSize == 0 && isBroken == NO && path != NULL"];
 			NSMutableArray * emptyItemsCopy = [[NSMutableArray alloc] initWithArray:[context executeFetchRequest:request error:NULL]];
 			_resultsViewController.emptyItems = emptyItemsCopy;
 		} else {
@@ -1111,21 +1091,16 @@ const double kBackgroundPriority = 1;
 		if ([OptionItem shouldFindBrokenAliases]) {
 			_progressLabel.stringValue = NSLocalizedString(@"Finding Broken Aliases...", nil);
 			
-			[request setPredicate:[NSPredicate predicateWithFormat:@"isBroken == YES"]];
+			request.predicate = [NSPredicate predicateWithFormat:@"isBroken == YES"];
 			NSMutableArray * brokenAliasesCopy = [[NSMutableArray alloc] initWithArray:[context executeFetchRequest:request error:NULL]];
 			_resultsViewController.brokenAliases = brokenAliasesCopy;
 		} else {
 			_resultsViewController.brokenAliases = nil;
 		}
-		
-		
 		_progressLabel.stringValue = @"";
-		
 		NSDebugLog(@"comparaison ended!");
 		
-		
 		[self setContentViewType:ContentViewTypeResults];
-		
 		[_resultsViewController reloadData];
 		
 		[self performSelectorOnMainThread:@selector(stopPreventingFromSleeping) withObject:nil waitUntilDone:NO];
@@ -1146,23 +1121,7 @@ const double kBackgroundPriority = 1;
 		}
 		
 		[_mainViewController.runButton setEnabled:YES];
-	}
-}
-
-#pragma mark -
-#pragma mark Memory Management
-
-/**
- Implementation of dealloc, to release the retained variables.
- */
-
-- (void)dealloc
-{
-	
-	managedObjectContext = nil;
-	persistentStoreCoordinator = nil;
-	managedObjectModel = nil;
-	
+	});
 }
 
 @end

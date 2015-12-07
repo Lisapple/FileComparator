@@ -39,7 +39,7 @@
 
 @synthesize labelColor = _labelColor;
 
-- (id)init
+- (instancetype)init
 {
 	if ((self = [super init])) {
 		info = [[NSMutableDictionary alloc] initWithCapacity:3];
@@ -84,31 +84,33 @@
 {
 	image = anImage;
 	
-	self.itemView.image = image;
+	dispatch_async(dispatch_get_main_queue(), ^{ self.itemView.image = image; });
 }
 
 - (void)setLabelColor:(NSColor *)labelColor
 {
 	_labelColor = labelColor;
 	
-	self.itemView.labelColor = labelColor;
+	dispatch_async(dispatch_get_main_queue(), ^{ self.itemView.labelColor = labelColor; });
 }
 
 - (void)reload
 {
-	if (self.labelColor)
-		self.itemView.labelColor = self.labelColor;
-	
-	self.itemView.selected = self.selected;
-	self.itemView.isOriginal = self.isOriginal;
-	
-	self.itemView.isGroup = self.isGroup;
+	dispatch_async(dispatch_get_main_queue(), ^{
+		if (self.labelColor)
+			self.itemView.labelColor = self.labelColor;
+		
+		self.itemView.selected = self.selected;
+		self.itemView.isOriginal = self.isOriginal;
+		
+		self.itemView.isGroup = self.isGroup;
+	});
 }
 
 - (void)setSelected:(BOOL)selected
 {
 	_selected = selected;
-	self.itemView.selected = selected;
+	dispatch_async(dispatch_get_main_queue(), ^{ self.itemView.selected = selected; });
 }
 
 @end
@@ -147,7 +149,7 @@ NSRect RectPositive(NSRect aRect)
 	return rect;
 }
 
-- (id)initWithCoder:(NSCoder *)decoder
+- (instancetype)initWithCoder:(NSCoder *)decoder
 {
 	if ((self = [super initWithCoder:decoder])) {
 		topMargin = 20.;
@@ -229,7 +231,7 @@ NSRect RectPositive(NSRect aRect)
 
 - (NSArray *)itemsForSection:(NSInteger)section
 {
-	NSArray * itemsViews = [_itemsSection objectAtIndex:section];
+	NSArray * itemsViews = _itemsSection[section];
 	NSMutableArray * items = [NSMutableArray arrayWithCapacity:itemsViews.count];
 	for (GridItemView * itemView in itemsViews) {
 		if (itemView.item)
@@ -249,7 +251,7 @@ NSRect RectPositive(NSRect aRect)
 	NSMutableArray * allSelectedItems = [[NSMutableArray alloc] initWithCapacity:100];
 	
 	for (int section = 0; section < numberOfSections; section++) {
-		NSArray * sectionItems = [allItemsArrays objectAtIndex:section];
+		NSArray * sectionItems = allItemsArrays[section];
 		for (GridItem * item in sectionItems) {
 			item.selected = YES;
 			
@@ -264,7 +266,7 @@ NSRect RectPositive(NSRect aRect)
 - (void)deselectAll
 {
 	for (int section = 0; section < numberOfSections; section++) {
-		NSArray * sectionItems = [allItemsArrays objectAtIndex:section];
+		NSArray * sectionItems = allItemsArrays[section];
 		for (GridItem * item in sectionItems) {
 			item.selected = NO;
 		}
@@ -278,7 +280,7 @@ NSRect RectPositive(NSRect aRect)
 {
 	int count = 0;
 	for (int section = 0; section < numberOfSections; section++) {
-		NSArray * sectionItems = [allItemsArrays objectAtIndex:section];
+		NSArray * sectionItems = allItemsArrays[section];
 		for (GridItem * item in sectionItems) {
 			if (count > 0) {
 				item.selected = NO;
@@ -292,7 +294,7 @@ NSRect RectPositive(NSRect aRect)
 - (void)selectAllNonOriginalsItems
 {
 	for (int section = 0; section < numberOfSections; section++) {
-		NSArray * sectionItems = [allItemsArrays objectAtIndex:section];
+		NSArray * sectionItems = allItemsArrays[section];
 		for (GridItem * item in sectionItems) {
 			if (item.isOriginal) {
 				item.selected = NO;
@@ -306,11 +308,7 @@ NSRect RectPositive(NSRect aRect)
 
 - (GridItem *)selectedItem
 {
-	if (selectedItems.count > 0) {
-		return [selectedItems objectAtIndex:0];
-	}
-	
-	return nil;
+	return selectedItems.firstObject;
 }
 
 - (NSArray *)selectedItems
@@ -340,7 +338,7 @@ NSRect RectPositive(NSRect aRect)
 {
 	for (int section = 0; section < numberOfSections; section++) {
 		
-		NSArray * itemsViews = [_itemsSection objectAtIndex:section];
+		NSArray * itemsViews = _itemsSection[section];
 		for (GridItemView * itemView in itemsViews) {
 			if (itemView.isOriginal) {
 				itemView.selected = NO;
@@ -373,7 +371,7 @@ NSRect RectPositive(NSRect aRect)
 {
 	NSMutableArray * allItems = [NSMutableArray arrayWithCapacity:100];
 	for (int section = 0; section < numberOfSections; section++) {
-		NSArray * items= [allItemsArrays objectAtIndex:section];
+		NSArray * items= allItemsArrays[section];
 		for (GridItem * item in items) {
 			[allItems addObject:item];
 		}
@@ -385,7 +383,7 @@ NSRect RectPositive(NSRect aRect)
 {
 	NSMutableArray * itemsViews = [NSMutableArray arrayWithCapacity:100];
 	for (int section = 0; section < numberOfSections; section++) {
-		[itemsViews addObjectsFromArray:[_itemsSection objectAtIndex:section]];
+		[itemsViews addObjectsFromArray:_itemsSection[section]];
 	}
 	return itemsViews;
 }
@@ -406,7 +404,7 @@ NSRect RectPositive(NSRect aRect)
 			[allItemsArrays addObject:allSectionItems];
 			showPlaceholder = NO;
 		} else {
-			[allItemsArrays addObject:[NSArray array]];
+			[allItemsArrays addObject:@[]];
 		}
 	}
 	
@@ -438,7 +436,7 @@ NSRect RectPositive(NSRect aRect)
 	
 	for (int section = 0; section < numberOfSections; section++) {
 		int index = 0;
-		NSArray * items = (NSArray *)[allItemsArrays objectAtIndex:section];
+		NSArray * items = (NSArray *)allItemsArrays[section];
 		for (GridItem * item in items) {
 			
 			int col = (index % itemsPerRow);
@@ -504,10 +502,10 @@ NSRect RectPositive(NSRect aRect)
 
 - (NSSize)sizeForSection:(NSInteger)section
 {
-	NSArray * items = [_itemsSection objectAtIndex:section];
+	NSArray * items = _itemsSection[section];
 	int numberOfRows = (int)ceilf(items.count / (float)itemsPerRow);
 	
-	NSSize viewSize = ((GridItemView *)[items objectAtIndex:0]).frame.size;
+	NSSize viewSize = ((GridItemView *)items.firstObject).frame.size;
 	
 #define kSectionTitleHeight 40.
 	float height = numberOfRows * (viewSize.height + 20.) + 2. * topMargin + kSectionTitleHeight;
@@ -555,7 +553,7 @@ NSRect RectPositive(NSRect aRect)
 	frame = NSOffsetRect(frame, offset.x, offset.y);
 	
 	for (int section = 0; section < numberOfSections; section++) {
-		NSArray * items = (NSArray *)[allItemsArrays objectAtIndex:section];
+		NSArray * items = (NSArray *)allItemsArrays[section];
 		for (GridItem * item in items) {
 			
 			NSRect rect = NSRectFromCGRect(item.frame);
@@ -567,7 +565,7 @@ NSRect RectPositive(NSRect aRect)
 					
 					GridItemView * itemView = nil;
 					if (_reusableItems.count > 0) {// If we can re-use view, re-show it
-						itemView = [_reusableItems objectAtIndex:0];
+						itemView = _reusableItems.firstObject;
 						
 						[itemView setHidden:NO];// View was hidden, re-show it
 						[_reusableItems removeObjectAtIndex:0];
@@ -638,14 +636,14 @@ NSRect RectPositive(NSRect aRect)
 		if (headerView && headerView.isHidden == NO)
 			sectionTopMargin += headerView.frame.size.height;
 		
-		if (((NSString *)[_sectionTitles objectAtIndex:section]).length > 0) {
+		if (((NSString *)_sectionTitles[section]).length > 0) {
 			sectionTopMargin += kSectionTitleHeight;
 		}
 		
 		NSInteger count = 0;
 		
 		if (allItemsArrays.count > section) {
-			NSArray * items = [allItemsArrays objectAtIndex:section];
+			NSArray * items = allItemsArrays[section];
 			count = items.count;
 			
 			int index = 0;
@@ -720,7 +718,7 @@ NSRect RectPositive(NSRect aRect)
 	for (int section = 0; section < numberOfSections; section++) {
 		
 		int index = 0;
-		for (GridItem * item in (NSArray *)[allItemsArrays objectAtIndex:section]) {
+		for (GridItem * item in (NSArray *)allItemsArrays[section]) {
 			if (NSPointInRect(point, item.itemView.hitFrame)) {
 				
 				[selectedItems addObject:item];
@@ -805,7 +803,7 @@ NSRect RectPositive(NSRect aRect)
 	/* Selection items into selection rect */
 	for (int section = 0; section < numberOfSections; section++) {
 		int index = 0;
-		for (GridItem * item in (NSArray *)[allItemsArrays objectAtIndex:section]) {
+		for (GridItem * item in (NSArray *)allItemsArrays[section]) {
 			NSRect sectionRect = NSIntersectionRect(selectionRect, item.itemView.hitFrame);
 			if (sectionRect.size.width > 0. && sectionRect.size.height > 0.) {
 				[allSelectedItems addObject:item];

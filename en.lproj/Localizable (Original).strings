@@ -1,0 +1,338 @@
+/*
+ Localizable.strings
+ Comparator
+ 
+ Created by Max on 29/02/12.
+ Copyright (c) 2012 Lis@cintosh. All rights reserved.
+ */
+
+"Cancel";
+"OK";
+
+
+/*** Application Classes ***/
+/* ComparatorAppDelegate */
+
+"Do you want to close the window?";
+"Don't Close";
+"Discard Change";
+"There is %ld current tasks. Would you like to close the window and discard the changes?";
+
+"No comparaison options selected!";
+"Please select options for comparaison before start the analyse.";
+
+"Listing directories...";
+
+"No files on input!";
+"Choose files and directories before start the analyse.";
+
+"Stopping...";
+
+"Untitled.txt";
+"Untitled.xml";
+"Export";
+
+"Run for Checked Sources";
+"READY_MESSAGE" = "Ready to Run!";
+"CHOOSE_OPTIONS_AND_SOURCES" = "Please choose options and sources";
+
+"Create a New Comparaison"
+
+"Search";
+
+"COMPARING_FILES" = "Comparing files...";
+"COMPARING_IMAGES" = "Comparing images...";
+"COMPARING_AUDIO_FILES" = "Comparing audio files...";
+"COMPARAISON_FINISHED" = "Comparaison Finished";
+"Click on \"+\" for a new comparaison";
+
+/* SourceItem */
+/* (Nothing) */
+
+/* OptionsViewController */
+"Choose a directory or a file.";
+"Add";
+"Choose";
+
+"You have added a Dropbox folder content.";
+"Ignore";
+"Dropbox is a service to backup files on server, this data could only be removed manually. If you really want to add this folder, click ignore.";
+
+"You have added a System folder.";
+"You have selected a folder that contains system folder, they may contains very important essantial to Mac OS system. If you really want to add this folder, click ignore.";
+
+
+"SOURCES_SECTION_TITLE" = "SOURCES";
+
+/* ExcludedExtensionsView */
+/* (Nothing) */
+
+/* FileSizeSettingsWindow */
+/* used??? */
+
+/* ResultsViewController.m */
+// @TODO: changes theses label to "XXX_CELL_TITLE"
+"Duplicates";
+"Empty Items";
+"Brokens Aliases";
+"Items to Deleted";
+"Items to Replace with Alias";
+
+"%li items";
+
+"Move";
+
+"Some items can't be moved to trash (the file system may not manage trash system). Would you want to delete the file?\nThis operation can't be undone.";
+"Delete";
+
+"Empty the Trash";
+"Replace Items";
+
+"No Duplicates";
+"No Empty Items";
+"No Broken Aliases";
+"No Items into the Trash";
+"No Items to Replace with Alias";
+
+"Files";
+"Images";
+"Audio";
+
+"Ext. Blacklist";
+"Ext. Whitelist";
+
+" (Original)";// -> used?
+
+/* CompareWindow */
+/* (nothing) */
+
+/* ApplicationPreferencesWindow */
+"All files with these extensions will be excluded from comparaison";
+"Only files with these extensions will be included from comparaison";
+
+/* ScreenView */
+/* (nothing) */
+
+/* SectionSourceTableViewCell */
+/* (nothing) */
+
+/* SourceTableViewCell */
+/* (nothing) */
+
+/* SeparationTableViewCell */
+/* (nothing) */
+
+/* SourceTableView */
+/* used??? */
+
+/* SourceOutlineView */
+/* used??? */
+
+/* InformationScreen */
+/* (nothing) */
+
+/* MyTextFieldCell */
+/* (nothing) */
+
+/* GetFilesOperation */
+/* (nothing) */
+
+/* BackHeaderButton */
+/* used??? */
+
+/*** Grid View ***/
+/* GridView */
+/* (nothing) */
+
+/* GridItemView */
+/* (nothing) */
+
+/* GridDocumentView */
+/* (nothing) */
+
+
+/*** Model Classes ***/
+
+/* FileItem */
+/* (nothing) */
+
+/* ImageItem */
+/* (nothing) */
+
+/* AudioItem */
+/* (nothing) */
+
+/* MovieItem */
+/* used??? */
+
+/* OptionItem */
+"Compare the %@";
+
+
+/*** Others Classes ***/
+
+/* MyWindow */
+/* used??? */
+
+/* MyBigProgressIndicator */
+/* (nothing) */
+
+/* SandboxHelper */
+/* (nothing) */
+
+
+/*** Additions ***/
+
+/* NSMutableArray+addition */
+/* (nothing) */
+
+/* NSArray+addition */
+/* (nothing) */
+
+/* NSColor+addition */
+/* (nothing) */
+
+/* NSString+addition */
+"TERABYTES" = "TB";
+"GIGABYTES" = "GB";
+"MEGABYTES" = "MB";
+"KILOBYTES" = "KB";
+"BYTES" = "bytes";
+"ZERO_BYTES" = "zero bytes";
+
+/* NSIndexSet+addition */
+/* (nothing) */
+
+/* NSDate+addition */
+/* (nothing) */
+
+/* NSIndexPath+addition */
+/* (nothing) */
+
+
+/*** Options ***/
+/* Short Description */
+"FileItemCompareSizeShortDescription" = "Size";
+"FileItemCompareFilenameShortDescription" = "Filename";
+"FileItemCompareUTIShortDescription" = "Kind";
+"FileItemCompareExtensionShortDescription" = "Extension";
+"FileItemCompareCreationDateShortDescription" = "Created";
+"FileItemCompareLastModificationDateShortDescription" = "Modified";
+
+"ImageItemCompareWidthInPixelsShortDescription" = "Width";
+"ImageItemCompareHeightInPixelsShortDescription" = "Height";
+"ImageItemCompareDepthShortDescription" = "Depth";
+"ImageItemCompareOrientationShortDescription" = "Orientation";
+"ImageItemCompareHasAlphaShortDescription" = "Alpha";
+"ImageItemCompareBitsPerPixelShortDescription" = "Bits/pixel";
+"ImageItemCompareBytesPerRowShortDescription" = "Bytes/row";
+"ImageItemCompareExifExposureTimeShortDescription" = "Exposure";
+"ImageItemCompareExifFNumberShortDescription" = "Focal Ratio";
+"ImageItemCompareExifISOSpeedRatingsShortDescription" = "ISO Speed";
+"ImageItemCompareExifFlashShortDescription" = "Flash";
+"ImageItemCompareExifFocalLengthShortDescription" = "Focal Len.";
+"ImageItemCompareExifUserCommentShortDescription" = "Comments";
+"ImageItemCompareExifContrastShortDescription" = "Contrast";
+"ImageItemCompareExifSaturationShortDescription" = "Saturation";
+"ImageItemCompareExifSharpnessShortDescription" = "Sharpness";
+"ImageItemCompareExifCameraOwnerNameShortDescription" = "Camera Owner";
+"ImageItemCompareExifSerialNumberShortDescription" = "Serial Numb.";
+"ImageItemCompareGIFLoopCountShortDescription" = "Loop Count";
+"ImageItemCompareGIFDelayTimeShortDescription" = "Delay";
+"ImageItemCompareGPSLatitudeShortDescription" = "Latitude";
+"ImageItemCompareGPSLongitudeShortDescription" = "Longitude";
+"ImageItemCompareGPSAltitudeShortDescription" = "Altitude";
+"ImageItemCompareGPSDateStampShortDescription" = "GPS Date";
+"ImageItemComparePNGInterlaceTypeShortDescription" = "Interlaced";
+"ImageItemCompareTIFFCompressionShortDescription" = "TIFF Compression";
+"ImageItemCompareTIFFMakeShortDescription" = "TIFF Maker";
+"ImageItemCompareTIFFModelShortDescription" = "TIFF Model";
+"ImageItemCompareTIFFSoftwareShortDescription" = "TIFF Soft.";
+
+"AudioItemCompareAlbumShortDescription" = "Album";
+"AudioItemCompareApproximateDurationShortDescription" = "Duration";
+"AudioItemCompareArtistShortDescription" = "Artist";
+"AudioItemCompareChannelLayoutShortDescription" = "Channels";
+"AudioItemCompareCommentsShortDescription" = "Comments";
+"AudioItemCompareComposerShortDescription" = "Composer";
+"AudioItemCompareCopyrightShortDescription" = "Copyright";
+"AudioItemCompareEncodingApplicationShortDescription" = "Encoding App.";
+"AudioItemCompareGenreShortDescription" = "Genre";
+"AudioItemCompareKeySignatureShortDescription" = "Key Sign.";
+"AudioItemCompareLyriscistShortDescription" = "Lyriscist";
+"AudioItemCompareNominalBitRateShortDescription" = "Bit Rate";
+"AudioItemCompareRecorderDateShortDescription" = "Recorder Date";
+"AudioItemCompareSourceBitDepthShortDescription" = "Bit Depth";
+"AudioItemCompareSourceEncoderShortDescription" = "Encoder";
+"AudioItemCompareTempoShortDescription" = "Tempo";
+"AudioItemCompareTimeSignatureShortDescription" = "Time Sign.";
+"AudioItemCompareTitleShortDescription" = "Title";
+"AudioItemCompareTrackNumberShortDescription" = "Track";
+"AudioItemCompareYearShortDescription" = "Year";
+
+"AdvancedOptionsIncludeHiddenItemsShortDescription" = "Include Hidden Items";
+"AdvancedOptionsIncludeBundleContentShortDescription" = "Include Bundle Content";
+
+"rootPathShortDescription" = "Where";
+
+/* Name */
+"FileItemCompareSizeName" = "size";
+"FileItemCompareFilenameName" = "filename";
+"FileItemCompareUTIName" = "type";
+"FileItemCompareExtensionName" = "extension";
+"FileItemCompareCreationDateName" = "creation date";
+"FileItemCompareLastModificationDateName" = "last modification date";
+
+"ImageItemCompareWidthInPixelsName" = "width in pixels";
+"ImageItemCompareHeightInPixelsName" = "height in pixels";
+"ImageItemCompareDepthName" = "depth";
+"ImageItemCompareOrientationName" = "orientation";
+"ImageItemCompareHasAlphaName" = "alpha value";
+"ImageItemCompareBitsPerPixelName" = "bits per pixel";
+"ImageItemCompareBytesPerRowName" = "bytes per row";
+"ImageItemCompareExifExposureTimeName" = "exposure";
+"ImageItemCompareExifFNumberName" = "focal ratio";
+"ImageItemCompareExifISOSpeedRatingsName" = "ISO speed";
+"ImageItemCompareExifFlashName" = "flash status";
+"ImageItemCompareExifFocalLengthName" = "focal";
+"ImageItemCompareExifUserCommentName" = "user comment";
+"ImageItemCompareExifContrastName" = "contrast";
+"ImageItemCompareExifSaturationName" = "saturation";
+"ImageItemCompareExifSharpnessName" = "sharpness";
+"ImageItemCompareExifCameraOwnerNameName" = "camera owner";
+"ImageItemCompareExifSerialNumberName" = "serial number";
+"ImageItemCompareGIFLoopCountName" = "loop count";
+"ImageItemCompareGIFDelayTimeName" = "delay";
+"ImageItemCompareGPSLatitudeName" = "latitude";
+"ImageItemCompareGPSLongitudeName" = "longitude";
+"ImageItemCompareGPSAltitudeName" = "altitude";
+"ImageItemCompareGPSDateStampName" = "date stamp";
+"ImageItemComparePNGInterlaceTypeName" = "interlace type";
+"ImageItemCompareTIFFCompressionName" = "compression";
+"ImageItemCompareTIFFMakeName" = "creator";
+"ImageItemCompareTIFFModelName" = "model";
+"ImageItemCompareTIFFSoftwareName" = "software";
+
+"AudioItemCompareAlbumName" = "album";
+"AudioItemCompareApproximateDurationName" = "duration";
+"AudioItemCompareArtistName" = "artist";
+"AudioItemCompareChannelLayoutName" = "channel layout";
+"AudioItemCompareCommentsName" = "comments";
+"AudioItemCompareComposerName" = "composer";
+"AudioItemCompareCopyrightName" = "copyright";
+"AudioItemCompareEncodingApplicationName" = "encoding application";
+"AudioItemCompareGenreName" = "genre";
+"AudioItemCompareKeySignatureName" = "key signature";
+"AudioItemCompareLyriscistName" = "lyriscist";
+"AudioItemCompareNominalBitRateName" = "bit rate";
+"AudioItemCompareRecorderDateName" = "recorder date";
+"AudioItemCompareSourceBitDepthName" = "bit depth";
+"AudioItemCompareSourceEncoderName" = "encoder name";
+"AudioItemCompareTempoName" = "tempo";
+"AudioItemCompareTimeSignatureName" = "time signature";
+"AudioItemCompareTitleName" = "title";
+"AudioItemCompareTrackNumberName" = "track number";
+"AudioItemCompareYearName" = "year";
+
+"AdvancedOptionsIncludeHiddenItemsName" = "include hidden items";
+"AdvancedOptionsIncludeBundleContentName" = "include bundle content";

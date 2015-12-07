@@ -17,7 +17,8 @@
 @class DraggingView;
 @protocol DraggingViewDelegate <NSObject>
 
-- (void)draggingView:(DraggingView *)draggingView didDragURL:(NSURL *)fileURL;
+- (void)draggingView:(DraggingView *)draggingView didDragSourceURLs:(NSArray *)sourceURLs;
+- (void)draggingView:(DraggingView *)draggingView didDragAdditionalSourceURLs:(NSArray *)sourceURLs;
 
 @end
 
@@ -42,10 +43,7 @@
 	NSImageView * __strong _imageView;
 	NSButton * __strong _showSourceInfoButton;
 	CenteredView * __strong _centeredView;
-	
-	NSURL * _URL;
 }
-
 
 @property (strong) IBOutlet NSWindow * optionsWindow;
 @property (strong) IBOutlet FolderDetailsWindow * folderDetailsWindow;
@@ -59,7 +57,10 @@
 
 @property (strong) IBOutlet NSButton * runButton;
 
-@property (nonatomic, copy) NSURL * URL;
+@property (readonly) NSArray * resolvedSourceURLs;
+
+- (void)addSourcesURLs:(NSArray *)newSourcesURLs;
+- (void)setSourceURLs:(NSArray *)sourceURLs;
 
 - (IBAction)startAction:(id)sender;
 - (IBAction)showOptionsAction:(id)sender;

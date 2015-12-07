@@ -306,6 +306,12 @@
 
 "\nand %ld more items" = "\net %ld autres éléments";
 
+"%ld folders" = "%ld dossiers";
+"No items - %@" = "Aucun élément - %@";
+
+"Would you like to exclude \"%@\"?" = "Voulez-vous exclure \"%@\"";
+"It will be added to blacklist, you can edit this list into application preferences." = "Il va être ajouté à la liste noite, vous pouvez l'éditer dans les préférences de l'application.";
+"Exclude" = "Exclure";
 
 "FileItemCompareSizeShortDescription" = "Poids";
 "FileItemCompareFilenameShortDescription" = "Nom";

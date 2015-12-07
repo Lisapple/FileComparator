@@ -35,22 +35,22 @@
 
 - (NSManagedObject *)managedObject
 {
-	return [self.info objectForKey:@"managedObject"];
+	return (self.info)[@"managedObject"];
 }
 
 - (void)setManagedObject:(NSManagedObject *)object
 {
-	[self.info setObject:object forKey:@"managedObject"];
+	(self.info)[@"managedObject"] = object;
 }
 
 - (NSManagedObject *)group
 {
-	return [self.info objectForKey:@"group"];
+	return (self.info)[@"group"];
 }
 
 - (void)setGroup:(NSManagedObject *)group
 {
-	[self.info setObject:group forKey:@"group"];
+	(self.info)[@"group"] = group;
 }
 
 @end
@@ -77,12 +77,14 @@
 @end
 
 
-@interface ResultsViewController (PrivateMethods)
+@interface ResultsViewController ()
 
-- (void)revertTableColumns;
-- (void)saveTableColumns;
+@property (nonatomic, strong) NSManagedObjectContext * managedObjectContext;
 
-- (void)showOriginalReplaceWithAliasWarning;
+//- (void)revertTableColumns;
+//- (void)saveTableColumns;
+
+//- (void)showOriginalReplaceWithAliasWarning;
 
 - (void)moveTo:(id)sender;
 
@@ -143,6 +145,32 @@
 	[_summaryResultsView setHidden:YES];
 }
 
+- (NSManagedObjectContext *)managedObjectContext
+{
+	// Note: Tired of this f* project, I do f* wrong things, I'm sorry
+	if (!_managedObjectContext) {
+		[self persistentStoreCoordinator];
+	}
+	return _managedObjectContext;
+}
+
+- (NSPersistentStoreCoordinator *)persistentStoreCoordinator
+{
+	NSPersistentStoreCoordinator * coordinator = [(ComparatorAppDelegate *)[NSApp delegate] persistentStoreCoordinator];
+	NSAssert(coordinator != nil, @"coordinator == nil");
+	
+	static NSPersistentStoreCoordinator * previousCoordinator = nil;
+	if (previousCoordinator != coordinator) {
+		previousCoordinator = coordinator;
+		
+		// Don't use context over threads, create a context for each thread with the persistent store
+		_managedObjectContext = [[NSManagedObjectContext alloc] init];
+		_managedObjectContext.persistentStoreCoordinator = coordinator;
+		_managedObjectContext.undoManager = nil;
+	}
+	return coordinator;
+}
+
 - (void)update// => used???
 {
 	currentGroup = nil;
@@ -193,26 +221,18 @@
 						   + [self numberOfItemsForDuplicateType:DuplicateTypeImages]
 						   + [self numberOfItemsForDuplicateType:DuplicateTypeAudioFiles]);
 	} else {
-		/* Don't use context over threads, create a context for each thread with the persistent store */
-		NSPersistentStoreCoordinator * coordinator = [[NSApp delegate] persistentStoreCoordinator];
-		NSAssert(coordinator != nil, @"coordinator == nil");
-		
-		NSManagedObjectContext * context = [[NSManagedObjectContext alloc] init];
-		[context setPersistentStoreCoordinator:coordinator];
-		[context setUndoManager:nil];
-		
 		NSFetchRequest * request = [[NSFetchRequest alloc] init];
-		[request setEntity:[self entityForDuplicateType:type context:context]];
+		[request setEntity:[self entityForDuplicateType:type context:self.managedObjectContext]];
 		
 		__block NSInteger count = 0;
-		[request setPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
-			NSInteger groupCount = [evaluatedObject mutableSetValueForKey:@"items"].count;
+		request.predicate = [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
+			NSInteger groupCount = [[evaluatedObject mutableSetValueForKey:@"items"] count];
 			if (groupCount > 1)// Find groups with more than one item
 				count += groupCount;
 			return YES;
-		}]];
+		}];
 		
-		[context countForFetchRequest:request error:NULL];
+		[self.managedObjectContext countForFetchRequest:request error:NULL];
 		
 		return count;
 	}
@@ -226,49 +246,35 @@
 		[allItems addObjectsFromArray:[self groupsForDuplicateType:DuplicateTypeImages]];
 		[allItems addObjectsFromArray:[self groupsForDuplicateType:DuplicateTypeAudioFiles]];
 		
-		NSPersistentStoreCoordinator * coordinator = [[NSApp delegate] persistentStoreCoordinator];
-		NSAssert(coordinator != nil, @"coordinator == nil");
-		
-		NSManagedObjectContext * context = [[NSManagedObjectContext alloc] init];
-		[context setPersistentStoreCoordinator:coordinator];
-		[context setUndoManager:nil];
-		
 		/* Order the array by number of items */
 		return [allItems sortedArrayUsingComparator:^NSComparisonResult(NSManagedObject * obj1, NSManagedObject * obj2) {
 			
-			NSManagedObject * o1 = [context objectWithID:obj1.objectID];
-			NSUInteger count1 = [o1 mutableSetValueForKey:@"items"].count;
+			NSManagedObject * o1 = [self.managedObjectContext objectWithID:obj1.objectID];
+			NSUInteger count1 = [[o1 primitiveValueForKey:@"items"] count];
 			
-			NSManagedObject * o2 = [context objectWithID:obj2.objectID];
-			NSUInteger count2 = [o2 mutableSetValueForKey:@"items"].count;
+			NSManagedObject * o2 = [self.managedObjectContext objectWithID:obj2.objectID];
+			NSUInteger count2 = [[o2 primitiveValueForKey:@"items"] count];
 			
 			NSInteger count = (count2 - count1);
 			return (count > 0)? NSOrderedDescending : ((count < 0)? NSOrderedAscending : NSOrderedSame);
 		}];
 	} else {
-		/* Don't use context over threads, create a context for each thread with the persistent store */
-		NSPersistentStoreCoordinator * coordinator = [[NSApp delegate] persistentStoreCoordinator];
-		NSAssert(coordinator != nil, @"coordinator == nil");
-		
-		NSManagedObjectContext * context = [[NSManagedObjectContext alloc] init];
-		[context setPersistentStoreCoordinator:coordinator];
-		[context setUndoManager:nil];
-		
 		NSFetchRequest * request = [[NSFetchRequest alloc] init];
-		request.entity = [self entityForDuplicateType:type context:context];
+		request.entity = [self entityForDuplicateType:type context:self.managedObjectContext];
 		request.predicate = [NSPredicate predicateWithFormat:@"items[SIZE] > 1"]; // Find groups with more than one item
 		
 		NSString * key = [[NSUserDefaults standardUserDefaults] stringForKey:@"OriginalSortedKey"];
+		if (!key) key = @"creationDate";
 		BOOL ascending = !([key isEqualToString:@"lastModificationDate"]);// Descending (NO) if "lastModificationDate", Ascending (YES) if "creationDate" or nil
 		
 		NSSortDescriptor * sortDescriptor = [[NSSortDescriptor alloc] initWithKey:key ascending:ascending];
-		request.sortDescriptors = [NSArray arrayWithObjects:sortDescriptor, [NSSortDescriptor sortDescriptorWithKey:@"path" ascending:YES], nil];
+		request.sortDescriptors = @[sortDescriptor, [NSSortDescriptor sortDescriptorWithKey:@"path" ascending:YES]];
 		
-		NSArray * groups = [context executeFetchRequest:request error:NULL];
+		NSArray * groups = [self.managedObjectContext executeFetchRequest:request error:NULL];
 		
 		return [groups sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-			NSUInteger count1 = [(NSManagedObject *)obj1 mutableSetValueForKey:@"items"].count;
-			NSUInteger count2 = [(NSManagedObject *)obj2 mutableSetValueForKey:@"items"].count;
+			NSUInteger count1 = [[(NSManagedObject *)obj1 primitiveValueForKey:@"items"] count];
+			NSUInteger count2 = [[(NSManagedObject *)obj2 primitiveValueForKey:@"items"] count];
 			NSInteger count = (count2 - count1);
 			return (count > 0)? NSOrderedDescending : ((count < 0)? NSOrderedAscending : NSOrderedSame);
 		}];
@@ -287,7 +293,7 @@
 		NSMutableArray * allItems = [NSMutableArray arrayWithCapacity:500];
 		NSArray * groups = [self groupsForDuplicateType:type];
 		for (NSManagedObject * group in groups) {
-			[allItems addObjectsFromArray:[group mutableSetValueForKey:@"items"].allObjects];
+			[allItems addObjectsFromArray:((NSMutableSet *)[group primitiveValueForKey:@"items"]).allObjects];
 		}
 		return allItems;
 	}
@@ -313,7 +319,7 @@
 		NSArray * groups = [self groupsForDuplicateType:type];
 		for (NSManagedObject * group in groups) {
 			NSManagedObject * newGroup = [self freshObjectFromObject:group];
-			NSMutableArray * itemsCopy = [[[newGroup mutableSetValueForKey:@"items"] sortedArrayUsingDescriptors:sortDescriptors] mutableCopy];
+			NSMutableArray * itemsCopy = [[(NSSet *)[newGroup primitiveValueForKey:@"items"] sortedArrayUsingDescriptors:sortDescriptors] mutableCopy];
 			[itemsCopy removeObjectAtIndex:0];
 			[allItems addObjectsFromArray:itemsCopy];
 		}
@@ -329,24 +335,16 @@
 						   + [self numberOfDuplicatesForDuplicateType:DuplicateTypeImages]
 						   + [self numberOfDuplicatesForDuplicateType:DuplicateTypeAudioFiles]);
 	} else {
-		/* Don't use context over threads, create a context for each thread with the persistent store */
-		NSPersistentStoreCoordinator * coordinator = [[NSApp delegate] persistentStoreCoordinator];
-		NSAssert(coordinator != nil, @"coordinator == nil");
-		
-		NSManagedObjectContext * context = [[NSManagedObjectContext alloc] init];
-		[context setPersistentStoreCoordinator:coordinator];
-		[context setUndoManager:nil];
-		
 		NSFetchRequest * request = [[NSFetchRequest alloc] init];
-		[request setEntity:[self entityForDuplicateType:type context:context]];
+		request.entity = [self entityForDuplicateType:type context:self.managedObjectContext];
 		
 		__block NSInteger count = 0;
-		[request setPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
-			count += ([evaluatedObject mutableSetValueForKey:@"items"].count - 1);
+		request.predicate = [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
+			count += ([[evaluatedObject mutableSetValueForKey:@"items"] count] - 1);
 			return YES;
-		}]];
+		}];
 		
-		[context countForFetchRequest:request error:NULL];
+		[self.managedObjectContext countForFetchRequest:request error:NULL];
 		
 		return count;
 	}
@@ -359,21 +357,13 @@
 									+ [self sizeOfDuplicatesForDuplicateType:DuplicateTypeImages]
 									+ [self sizeOfDuplicatesForDuplicateType:DuplicateTypeAudioFiles]);
 	} else {
-		/* Don't use context over threads, create a context for each thread with the persistent store */
-		NSPersistentStoreCoordinator * coordinator = [[NSApp delegate] persistentStoreCoordinator];
-		NSAssert(coordinator != nil, @"coordinator == nil");
-		
-		NSManagedObjectContext * context = [[NSManagedObjectContext alloc] init];
-		[context setPersistentStoreCoordinator:coordinator];
-		[context setUndoManager:nil];
-		
 		NSFetchRequest * request = [[NSFetchRequest alloc] init];
-		[request setEntity:[self entityForDuplicateType:type context:context]];
+		[request setEntity:[self entityForDuplicateType:type context:self.managedObjectContext]];
 		
 		__block unsigned long long totalSize = 0.;
 		[request setPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
 			BOOL isFirstItem = YES;
-			NSArray * items = [evaluatedObject mutableSetValueForKey:@"items"].allObjects;
+			NSArray * items = [[evaluatedObject mutableSetValueForKey:@"items"] allObjects];
 			for (FileItem * item in items) {
 				if (isFirstItem) {// Skip the first item
 					isFirstItem = NO;
@@ -385,7 +375,7 @@
 			return YES;
 		}]];
 		
-		[context countForFetchRequest:request error:NULL];
+		[self.managedObjectContext countForFetchRequest:request error:NULL];
 		
 		return totalSize;
 	}
@@ -395,37 +385,20 @@
 
 - (NSManagedObject *)freshObjectFromObject:(NSManagedObject *)object
 {
-	static NSManagedObjectContext * context = nil;
-	if (!context) {
-		NSPersistentStoreCoordinator * coordinator = [[NSApp delegate] persistentStoreCoordinator];
-		NSAssert(coordinator != nil, @"coordinator == nil");
-		
-		context = [[NSManagedObjectContext alloc] init];
-		[context setPersistentStoreCoordinator:coordinator];
-		[context setUndoManager:nil];
-	}
-	
-	NSManagedObject * newObject = [context objectWithID:object.objectID];
-	[context refreshObject:newObject mergeChanges:YES];
+	NSManagedObject * newObject = [self.managedObjectContext objectWithID:object.objectID];
+	[self.managedObjectContext refreshObject:newObject mergeChanges:YES];
 	return newObject;
 }
 
 - (void)deleteItems:(NSArray *)items
 {
-	NSPersistentStoreCoordinator * coordinator = [[NSApp delegate] persistentStoreCoordinator];
-	NSAssert(coordinator != nil, @"coordinator == nil");
-	
-	NSManagedObjectContext * context = [[NSManagedObjectContext alloc] init];
-	[context setPersistentStoreCoordinator:coordinator];
-	[context setUndoManager:nil];
-	
 	for (FileItem * item in items) {
-		NSManagedObject * newItem = [context objectWithID:item.objectID];
-		[context deleteObject:newItem];
+		NSManagedObject * newItem = [self.managedObjectContext objectWithID:item.objectID];
+		[self.managedObjectContext deleteObject:newItem];
 	}
 	
 	NSError * error = nil;
-	[context save:&error];
+	[self.managedObjectContext save:&error];
 	if (error) {
 		NSDebugLog(@"save error %@", [error localizedDescription]);
 	}
@@ -468,7 +441,7 @@
 	NSMutableArray * items = [[NSMutableArray alloc] initWithCapacity:groups.count];
 	for (NSManagedObject * group in groups) {
 		
-		NSSet * set = (NSSet *)[[self freshObjectFromObject:group] mutableSetValueForKey:@"items"];
+		NSSet * set = (NSSet *)[[self freshObjectFromObject:group] primitiveValueForKey:@"items"];
 		
 		GridItem * item = [[GridItem alloc] init];
 		item.title = [NSString stringWithFormat:itemsString, set.count];
@@ -495,13 +468,6 @@
 
 - (NSArray *)gridItemsForGroup:(NSManagedObject *)group
 {
-	NSPersistentStoreCoordinator * coordinator = [[NSApp delegate] persistentStoreCoordinator];
-	NSAssert(coordinator != nil, @"coordinator == nil");
-	
-	NSManagedObjectContext * context = [[NSManagedObjectContext alloc] init];
-	[context setPersistentStoreCoordinator:coordinator];
-	[context setUndoManager:nil];
-	
 	NSString * key = [[NSUserDefaults standardUserDefaults] stringForKey:@"OriginalSortedKey"];
 	BOOL ascending = !([key isEqualToString:@"lastModificationDate"]);// Descending (NO) if "lastModificationDate", Ascending (YES) if "creationDate" or nil
 	
@@ -509,12 +475,12 @@
 																	ascending:ascending];
 	NSArray * descriptors = @[ sortDescriptor, [NSSortDescriptor sortDescriptorWithKey:@"path" ascending:YES] ];
 	
-	NSManagedObject * newGroup = [context objectWithID:group.objectID];
-	NSArray * groups = [[newGroup mutableSetValueForKey:@"items"] sortedArrayUsingDescriptors:descriptors];
+	NSManagedObject * newGroup = [self.managedObjectContext objectWithID:group.objectID];
+	NSArray * groups = [[newGroup primitiveValueForKey:@"items"] sortedArrayUsingDescriptors:descriptors];
 	NSManagedObject * originalItemsObject = [newGroup valueForKey:@"originalItems"];
 	
 	if (groups.count > 0 && (originalItemsObject == nil)) {
-		FileItem * item = groups[0];
+		FileItem * item = groups.firstObject;
 		[self setOriginalItem:item forGroup:group];
 		originalItemsObject = item;
 	}
@@ -563,7 +529,6 @@
 		}
 		item.deleted = deleted;
 		
-		
 		item.labelColor = [newFileItem labelColor];
 		
 		NSURL * fileURL = [NSURL fileURLWithPath:path];
@@ -574,7 +539,7 @@
 			
 			CFDictionaryRef thumbnailAttributes = CFDictionaryCreate(kCFAllocatorDefault, keys, values, 1, NULL, NULL);
 			CGImageRef imageRef = QLThumbnailImageCreate(kCFAllocatorDefault, (__bridge CFURLRef)fileURL, CGSizeMake(64., 64.), thumbnailAttributes);
-			//if (thumbnailAttributes) CFRelease(thumbnailAttributes);
+			if (thumbnailAttributes) CFRelease(thumbnailAttributes);
 			
 			if (imageRef) {
 				NSImage * image = [[NSImage alloc] initWithCGImage:imageRef size:NSZeroSize];
@@ -773,7 +738,7 @@
 		
 		if (currentGroup) {
 			NSUInteger count = 0;
-			for (FileItem * item in [currentGroup mutableSetValueForKey:@"items"]) {
+			for (FileItem * item in [currentGroup primitiveValueForKey:@"items"]) {
 				if (!item.isDeleted) count++;
 			}
 			
@@ -807,12 +772,10 @@
 - (void)reloadSummaryView
 {
 	if ([OptionItem useAutomaticComparaison] && showSummaryView) {// Summary View is visible
+		
 		_summaryCenteredView.verticallyCentered = YES;
 		_summaryCenteredView.offsetEdge = RectEdgeMake(48., 0., 60., 0.);
-		
-		_summaryResultsView.numberOfDuplicatesLabel.fontHeight = 18.;
-		_summaryResultsView.totalSizeLabel.fontHeight = 18.;
-		
+#if 1
 		if (selectedSourceType == SourceTypeDuplicates) {
 			/* Show the number of duplicates */
 			_summaryResultsView.numberOfDuplicatesLabel.title = [NSString stringWithFormat:@"%ld %@", [self numberOfItemsForDuplicateType:selectedDuplicateType], NSLocalizedString(@"Duplicates", nil)];
@@ -827,16 +790,20 @@
 			_summaryResultsView.numberOfDuplicatesLabel.title = @"";// Show "{dd} Broken Aliases" to the bottom label to avoid the blank
 			_summaryResultsView.totalSizeLabel.title = [NSString stringWithFormat:@"%ld %@", brokenAliases.count, NSLocalizedString(@"Broken Aliases", nil)];
 		}
-		[_summaryResultsView setHidden:NO];
+#endif
+		_summaryResultsView.hidden = NO;
+		_splitView.hidden = YES;
 	} else {
-		[_summaryResultsView setHidden:YES];
+		_summaryResultsView.hidden = YES;
+		_splitView.hidden = NO;
 	}
 }
 
 - (IBAction)dismissSummaryResultsView:(id)sender
 {
 	showSummaryView = NO;
-	[_summaryResultsView setHidden:YES];
+	_summaryResultsView.hidden = YES;
+	_splitView.hidden = NO;
 	
 	[gridView reloadData];
 }
@@ -852,16 +819,9 @@
 					  completionHandler:^(NSInteger result) {
 						  if (result == NSFileHandlingPanelOKButton) {
 							  
-							  NSPersistentStoreCoordinator * coordinator = [[NSApp delegate] persistentStoreCoordinator];
-							  NSAssert(coordinator != nil, @"coordinator == nil");
-							  
-							  NSManagedObjectContext * context = [[NSManagedObjectContext alloc] init];
-							  [context setPersistentStoreCoordinator:coordinator];
-							  [context setUndoManager:nil];
-							  
 							  NSMutableArray * itemsToMove = [[NSMutableArray alloc] initWithCapacity:self.items.count];
 							  for (FileItem * item in self.items) {
-								  FileItem * newItem = (FileItem *)[context objectWithID:item.objectID];
+								  FileItem * newItem = (FileItem *)[self.managedObjectContext objectWithID:item.objectID];
 								  if (newItem.selected.boolValue) {
 									  [itemsToMove addObject:newItem];
 								  }
@@ -877,13 +837,13 @@
 							  
 							  /* Delete items from context */
 							  for (FileItem * item in movedItems) {
-								  [context deleteObject:item];
+								  [self.managedObjectContext deleteObject:item];
 							  }
 							  
 							  if (!success) NSLog(@"moving items fails!");// @TODO: show an alert on fails
 							  
 							  NSError * error = nil;
-							  [context save:&error];// Force save
+							  [self.managedObjectContext save:&error];// Force save
 							  if (error) {
 								  NSDebugLog(@"save error %@", [error localizedDescription]);
 							  }
@@ -898,7 +858,7 @@
 	NSMenuItem * menuItem = (NSMenuItem *)sender;
 	NSInteger index = [[menuItem menu] indexOfItem:menuItem];
 	
-	NSDebugLog(@"moveTo: (index = %i)", index);
+	NSDebugLog(@"moveTo: (index = %li)", index);
 	
 	if (index == 0) {// Trash
 		
@@ -925,16 +885,9 @@
 						  completionHandler:^(NSInteger result) {
 							  if (result == NSFileHandlingPanelOKButton) {
 								  
-								  NSPersistentStoreCoordinator * coordinator = [[NSApp delegate] persistentStoreCoordinator];
-								  NSAssert(coordinator != nil, @"coordinator == nil");
-								  
-								  NSManagedObjectContext * context = [[NSManagedObjectContext alloc] init];
-								  [context setPersistentStoreCoordinator:coordinator];
-								  [context setUndoManager:nil];
-								  
 								  NSMutableArray * itemsToMove = [[NSMutableArray alloc] initWithCapacity:self.items.count];
 								  for (FileItem * item in self.items) {
-									  FileItem * newItem = (FileItem *)[context objectWithID:item.objectID];
+									  FileItem * newItem = (FileItem *)[self.managedObjectContext objectWithID:item.objectID];
 									  if (newItem.selected.boolValue) {
 										  [itemsToMove addObject:item];
 									  }
@@ -946,12 +899,12 @@
 								  [self moveItems:itemsToMove toFolder:path keepHierarchy:[userDefaults boolForKey:@"keepHierarchy"] movedItems:NULL];
 								  
 								  for (FileItem * item in itemsToMove) {
-									  FileItem * newItem = (FileItem *)[context objectWithID:item.objectID];
-									  newItem.selected = [NSNumber numberWithBool:NO];
+									  FileItem * newItem = (FileItem *)[self.managedObjectContext objectWithID:item.objectID];
+									  newItem.selected = @NO;
 								  }
 								  
 								  NSError * error = nil;
-								  [context save:&error];// Force save
+								  [self.managedObjectContext save:&error];// Force save
 								  if (error) {
 									  NSDebugLog(@"save error %@", [error localizedDescription]);
 								  }
@@ -981,19 +934,12 @@
 
 - (void)moveItems:(NSArray *)items toPath:(NSString *)path
 {
-	NSPersistentStoreCoordinator * coordinator = [[NSApp delegate] persistentStoreCoordinator];
-	NSAssert(coordinator != nil, @"coordinator == nil");
-	
-	NSManagedObjectContext * context = [[NSManagedObjectContext alloc] init];
-	[context setPersistentStoreCoordinator:coordinator];
-	[context setUndoManager:nil];
-	
 	NSMutableArray * itemsToMove = [[NSMutableArray alloc] initWithCapacity:items.count];
 	for (FileItem * item in items) {
 		
 		// @TODO: if destination file exist, ask to skip, replace or keep both
 		
-		FileItem * newItem = (FileItem *)[context objectWithID:item.objectID];
+		FileItem * newItem = (FileItem *)[self.managedObjectContext objectWithID:item.objectID];
 		NSString * newPath = [NSString stringWithFormat:@"%@/%@", path, newItem.path.lastPathComponent];
 		
 		NSError * error = nil;
@@ -1003,12 +949,12 @@
 			newItem.path = newPath;
 		} else {
 			[itemsToMove addObject:newItem];
-			NSDebugLog(@"moveItemAtPath failed (%@ - %i) for item at path : %@", [error localizedDescription], [error code], newItem.path);
+			NSDebugLog(@"moveItemAtPath failed (%@ - %li) for item at path : %@", [error localizedDescription], (long)[error code], newItem.path);
 		}
 	}
 	
 	NSError * error = nil;
-	[context save:&error];// Force save from the context of the group
+	[self.managedObjectContext save:&error];// Force save from the context of the group
 	if (error) {
 		NSDebugLog(@"save error %@", [error localizedDescription]);
 	}
@@ -1018,24 +964,17 @@
 
 - (BOOL)moveItems:(NSArray *)items toFolder:(NSString *)folder keepHierarchy:(BOOL)keepHierarchy movedItems:(NSArray **)movedItems
 {
-	NSPersistentStoreCoordinator * coordinator = [[NSApp delegate] persistentStoreCoordinator];
-	NSAssert(coordinator != nil, @"coordinator == nil");
-	
-	NSManagedObjectContext * context = [[NSManagedObjectContext alloc] init];
-	[context setPersistentStoreCoordinator:coordinator];
-	[context setUndoManager:nil];
-	
 	NSInteger count = 0;
 	if (keepHierarchy) {
 		
 		NSMutableArray * paths = [[NSMutableArray alloc] initWithCapacity:items.count];
-		for (FileItem * item in items) { [paths addObject:((FileItem *)[context objectWithID:item.objectID]).path]; }
+		for (FileItem * item in items) { [paths addObject:((FileItem *)[self.managedObjectContext objectWithID:item.objectID]).path]; }
 		NSString * rootPath = [self rootPathForPaths:paths];
 		
 		NSMutableArray * mutableMovedItems = [NSMutableArray arrayWithCapacity:items.count];
 		for (FileItem * item in items) {
 			
-			FileItem * newItem = (FileItem *)[context objectWithID:item.objectID];
+			FileItem * newItem = (FileItem *)[self.managedObjectContext objectWithID:item.objectID];
 			NSString * newPath = [newItem.path stringByReplacingOccurrencesOfString:rootPath withString:folder];
 			
 			NSString * folderPath = [newPath stringByDeletingLastPathComponent];
@@ -1079,7 +1018,7 @@
 			
 			// @TODO: if destination file exist, ask to skip, replace or keep both
 			
-			FileItem * newItem = (FileItem *)[context objectWithID:item.objectID];
+			FileItem * newItem = (FileItem *)[self.managedObjectContext objectWithID:item.objectID];
 			
 			NSString * newPath = [NSString stringWithFormat:@"%@/%@", folder, newItem.path.lastPathComponent];
 			
@@ -1093,7 +1032,7 @@
 				newItem.path = newPath;
 			} else {
 				[itemsToMove addObject:newItem];
-				NSDebugLog(@"moveItemAtPath failed (%@ - %i) for item at path : %@", [error localizedDescription], [error code], newItem.path);
+				NSDebugLog(@"moveItemAtPath failed (%@ - %li) for item at path : %@", [error localizedDescription], (long)[error code], newItem.path);
 			}
 		}
 		
@@ -1105,7 +1044,7 @@
 	}
 	
 	NSError * error = nil;
-	[context save:&error];// Force save from the context of the group
+	[self.managedObjectContext save:&error];// Force save from the context of the group
 	if (error) {
 		NSDebugLog(@"save error %@", [error localizedDescription]);
 	}
@@ -1117,15 +1056,15 @@
 {
 	if (paths.count == 0) return nil;
 	
-	NSMutableArray * rootPathComponents = [[[(NSString *)[paths objectAtIndex:0] stringByDeletingLastPathComponent] pathComponents] mutableCopy];
+	NSMutableArray * rootPathComponents = [[[(NSString *)paths.firstObject stringByDeletingLastPathComponent] pathComponents] mutableCopy];
 	for (NSString * path in paths) {
 		
 		NSArray * pathComponents = [path pathComponents];
 		NSMutableArray * _rootPathComponents = [[NSMutableArray alloc] initWithCapacity:pathComponents.count];
 		
 		for (int i = 0; i < MIN(pathComponents.count, rootPathComponents.count); i++) {
-			NSString * folder = [pathComponents objectAtIndex:i];
-			if ([folder isEqualToString:[rootPathComponents objectAtIndex:i]]) {
+			NSString * folder = pathComponents[i];
+			if ([folder isEqualToString:rootPathComponents[i]]) {
 				[_rootPathComponents addObject:folder];
 			} else {
 				break;
@@ -1144,7 +1083,7 @@
 
 - (BOOL)moveItemToTrash:(FileItem *)item
 {
-	return [self moveItemsToTrash:[NSArray arrayWithObject:item]];
+	return [self moveItemsToTrash:@[item]];
 }
 
 - (BOOL)moveItemsToTrash:(NSArray *)items movedItems:(NSArray **)movedItems
@@ -1193,13 +1132,6 @@
 
 - (BOOL)moveItemsToTrash:(NSArray *)array
 {
-	NSPersistentStoreCoordinator * coordinator = [[NSApp delegate] persistentStoreCoordinator];
-	NSAssert(coordinator != nil, @"coordinator == nil");
-	
-	NSManagedObjectContext * context = [[NSManagedObjectContext alloc] init];
-	[context setPersistentStoreCoordinator:coordinator];
-	[context setUndoManager:nil];
-	
 	BOOL completeSuccess = YES;
 	
 	NSFileManager * fileManager = [[NSFileManager alloc] init];
@@ -1212,43 +1144,43 @@
 		} else {
 			const char * sourcePath = [item.path cStringUsingEncoding:NSUTF8StringEncoding];
 			char * targetPath = NULL;
-			/*OSStatus error = */FSPathMoveObjectToTrashSync(sourcePath, &targetPath, kFSFileOperationDefaultOptions);
+			FSPathMoveObjectToTrashSync(sourcePath, &targetPath, kFSFileOperationDefaultOptions);
 			success = (targetPath != NULL);
 		}
 		if (success) {
 			
 			NSArray * duplicatesToDeleteCopy = [duplicatesToDelete copy];
 			for (GridItem * gridItem in duplicatesToDeleteCopy) {
-				if ([((FileItem *)[context objectWithID:gridItem.managedObject.objectID]).path isEqualToString:item.path]) {
+				if ([((FileItem *)[self.managedObjectContext objectWithID:gridItem.managedObject.objectID]).path isEqualToString:item.path]) {
 					[duplicatesToDelete removeObject:gridItem];
 				}
 			}
 			
 			NSArray * emptyItemsToDeleteCopy = [emptyItemsToDelete copy];
 			for (GridItem * gridItem in emptyItemsToDeleteCopy) {
-				if ([((FileItem *)[context objectWithID:gridItem.managedObject.objectID]).path isEqualToString:item.path]) {
+				if ([((FileItem *)[self.managedObjectContext objectWithID:gridItem.managedObject.objectID]).path isEqualToString:item.path]) {
 					[emptyItemsToDelete removeObject:gridItem];
 				}
 			}
 			
 			NSArray * brokenAliasesToDeleteCopy = [brokenAliasesToDelete copy];
 			for (GridItem * gridItem in brokenAliasesToDeleteCopy) {
-				if ([((FileItem *)[context objectWithID:gridItem.managedObject.objectID]).path isEqualToString:item.path]) {
+				if ([((FileItem *)[self.managedObjectContext objectWithID:gridItem.managedObject.objectID]).path isEqualToString:item.path]) {
 					[brokenAliasesToDelete removeObject:gridItem];
 				}
 			}
 			
 			NSArray * itemsToReplaceCopy = [itemsToReplace copy];
 			for (GridItem * gridItem in itemsToReplaceCopy) {
-				if ([((FileItem *)[context objectWithID:gridItem.managedObject.objectID]).path isEqualToString:item.path]) {
+				if ([((FileItem *)[self.managedObjectContext objectWithID:gridItem.managedObject.objectID]).path isEqualToString:item.path]) {
 					[itemsToReplace removeObject:gridItem];
 				}
 			}
 			
-			[context deleteObject:[context objectWithID:item.objectID]];
+			[self.managedObjectContext deleteObject:[self.managedObjectContext objectWithID:item.objectID]];
 			
 		} else {
-			[itemsToDelete addObject:[context objectWithID:item.objectID]];
+			[itemsToDelete addObject:[self.managedObjectContext objectWithID:item.objectID]];
 		}
 		
 		completeSuccess &= success;
@@ -1274,40 +1206,40 @@
 					
 					NSArray * duplicatesToDeleteCopy = [duplicatesToDelete copy];
 					for (GridItem * gridItem in duplicatesToDeleteCopy) {
-						if ([((FileItem *)[context objectWithID:gridItem.managedObject.objectID]).path isEqualToString:item.path]) {
+						if ([((FileItem *)[self.managedObjectContext objectWithID:gridItem.managedObject.objectID]).path isEqualToString:item.path]) {
 							[duplicatesToDelete removeObject:gridItem];
 						}
 					}
 					
 					NSArray * emptyItemsToDeleteCopy = [emptyItemsToDelete copy];
 					for (GridItem * gridItem in emptyItemsToDeleteCopy) {
-						if ([((FileItem *)[context objectWithID:gridItem.managedObject.objectID]).path isEqualToString:item.path]) {
+						if ([((FileItem *)[self.managedObjectContext objectWithID:gridItem.managedObject.objectID]).path isEqualToString:item.path]) {
 							[emptyItemsToDelete removeObject:gridItem];
 						}
 					}
 					
 					NSArray * brokenAliasesToDeleteCopy = [brokenAliasesToDelete copy];
 					for (GridItem * gridItem in brokenAliasesToDeleteCopy) {
-						if ([((FileItem *)[context objectWithID:gridItem.managedObject.objectID]).path isEqualToString:item.path]) {
+						if ([((FileItem *)[self.managedObjectContext objectWithID:gridItem.managedObject.objectID]).path isEqualToString:item.path]) {
 							[brokenAliasesToDelete removeObject:gridItem];
 						}
 					}
 					
 					NSArray * itemsToReplaceCopy = [itemsToReplace copy];
 					for (GridItem * gridItem in itemsToReplaceCopy) {
-						if ([((FileItem *)[context objectWithID:gridItem.managedObject.objectID]).path isEqualToString:item.path]) {
+						if ([((FileItem *)[self.managedObjectContext objectWithID:gridItem.managedObject.objectID]).path isEqualToString:item.path]) {
 							[itemsToReplace removeObject:gridItem];
 						}
 					}
 					
-					[context deleteObject:[context objectWithID:item.objectID]];
+					[self.managedObjectContext deleteObject:[self.managedObjectContext objectWithID:item.objectID]];
 				}
 			}
 		}
 	}
 	
 	NSError * error = nil;// @TODO: save the context juste one time
-	[context save:&error];// Force save from the context of the group
+	[self.managedObjectContext save:&error];// Force save from the context of the group
 	if (error) {
 		NSDebugLog(@"save error %@", [error localizedDescription]);
 	}
@@ -1457,7 +1389,7 @@
 		NSSortDescriptor * sortDescriptor = [[NSSortDescriptor alloc] initWithKey:((!key)? @"creationDate": key)
 																		ascending:ascending];
 		NSArray * descriptors = @[ sortDescriptor, [NSSortDescriptor sortDescriptorWithKey:@"path" ascending:YES] ];
-		NSArray * sortedItems = [[group mutableSetValueForKey:@"items"] sortedArrayUsingDescriptors:descriptors];
+		NSArray * sortedItems = [[group primitiveValueForKey:@"items"] sortedArrayUsingDescriptors:descriptors];
 		
 		if (sortedItems.count > 0) {
 			
@@ -1473,7 +1405,7 @@
 				}
 				
 				if (!contains)
-					return [sortedItems objectAtIndex:index];
+					return sortedItems[index];
 				
 				index++;
 			}
@@ -1488,7 +1420,7 @@
 	NSArray * selectedItems = [gridView selectedItems];
 	if (selectedItems.count == 1) {// Only one item can be selected
 		
-		GridItem * gridItem = [selectedItems objectAtIndex:0];
+		GridItem * gridItem = selectedItems.firstObject;
 		FileItem * item = (FileItem *)gridItem.managedObject;
 		
 		for (GridItem * gridItem in [gridView gridItems]) {
@@ -1520,20 +1452,13 @@
 		}
 	}
 	
-	NSPersistentStoreCoordinator * coordinator = [[NSApp delegate] persistentStoreCoordinator];
-	NSAssert(coordinator != nil, @"coordinator == nil");
-	
-	NSManagedObjectContext * context = [[NSManagedObjectContext alloc] init];
-	[context setPersistentStoreCoordinator:coordinator];
-	[context setUndoManager:nil];
-	
-	NSManagedObject * newGroup = [context objectWithID:group.objectID];
-	NSManagedObject * newItem = [context objectWithID:item.objectID];
+	NSManagedObject * newGroup = [self.managedObjectContext objectWithID:group.objectID];
+	NSManagedObject * newItem = [self.managedObjectContext objectWithID:item.objectID];
 	
 	[newGroup setValue:newItem forKey:@"originalItems"];
 	
 	NSError * error = nil;
-	[context save:&error];// Force save the change
+	[self.managedObjectContext save:&error];// Force save the change
 	if (error) {
 		NSDebugLog(@"save error: %@", [error localizedDescription]);
 	}
@@ -1562,11 +1487,11 @@
 	NSString * optionsString = [options componentsJoinedByString:@", "];
 	
 	NSMutableDictionary * allItemsPanelAttributes = [[NSMutableDictionary alloc] init];
-	[allItemsPanelAttributes setObject:optionsString forKey:@"Options"];
+	allItemsPanelAttributes[@"Options"] = optionsString;
 	
 	itemsPanelAttributes = allItemsPanelAttributes;
 	
-	panelRows = [[NSArray alloc] initWithObjects:[NSString stringWithFormat:@"Options=%@", optionsString], nil];
+	panelRows = @[[NSString stringWithFormat:@"Options=%@", optionsString]];
 	
 	[previewPanelView setHidden:YES];
 	
@@ -1885,7 +1810,7 @@
 {
 	NSArray * selectedItems = [gridView selectedItems];
 	if (selectedItems.count == 2) {
-		GridItem * item1 = selectedItems[0];
+		GridItem * item1 = selectedItems.firstObject;
 		GridItem * item2 = selectedItems[1];
 		if (!item1.isGroup && !item2.isGroup) {
 			
@@ -1943,7 +1868,7 @@
 								  
 								  if (item.isGroup) {
 									  NSManagedObject * group = item.group;
-									  NSMutableSet * duplicates = [[group mutableSetValueForKey:@"items"] copy];
+									  NSMutableSet * duplicates = [[group primitiveValueForKey:@"items"] copy];
 									  [duplicates removeObject:[self originalItemForGroup:group]];
 									  [items addObjectsFromArray:duplicates.allObjects];
 								  } else {
@@ -1980,7 +1905,7 @@
 			
 			if (item.isGroup) {
 				NSManagedObject * group = item.group;
-				NSMutableSet * duplicates = [[group mutableSetValueForKey:@"items"] copy];
+				NSMutableSet * duplicates = [[group primitiveValueForKey:@"items"] copy];
 				[duplicates removeObject:[self originalItemForGroup:group]];
 				
 				NSArray * movedItems;
@@ -2034,7 +1959,7 @@
 			
 			if (item.isGroup) {
 				NSManagedObject * group = item.group;
-				NSMutableSet * duplicates = [[group mutableSetValueForKey:@"items"] copy];
+				NSMutableSet * duplicates = [[group primitiveValueForKey:@"items"] copy];
 				[duplicates removeObject:[self originalItemForGroup:group]];
 				
 				NSArray * movedItems;
@@ -2088,7 +2013,7 @@
 			
 			if (item.isGroup) {
 				NSManagedObject * group = item.group;
-				NSMutableSet * duplicates = [[group mutableSetValueForKey:@"items"] copy];
+				NSMutableSet * duplicates = [[group primitiveValueForKey:@"items"] copy];
 				[duplicates removeObject:[self originalItemForGroup:group]];
 				[items addObjectsFromArray:duplicates.allObjects];
 			} else {
@@ -2127,7 +2052,7 @@
 			
 			if (item.isGroup) {
 				NSManagedObject * group = item.group;
-				NSMutableSet * duplicates = [[group mutableSetValueForKey:@"items"] copy];
+				NSMutableSet * duplicates = [[group primitiveValueForKey:@"items"] copy];
 				[duplicates removeObject:[self originalItemForGroup:group]];
 				[items addObjectsFromArray:duplicates.allObjects];
 			} else {
@@ -2210,12 +2135,11 @@
 			if (imageRef) {
 				NSImage * image = [[NSImage alloc] initWithCGImage:imageRef size:NSZeroSize];
 				CGImageRelease(imageRef);
-				previewImageView.image = image;
-				
+				dispatch_async(dispatch_get_main_queue(), ^{ previewImageView.image = image; });
 			} else {
 				NSImage * image = [[NSWorkspace sharedWorkspace] iconForFile:fileURL.path];
 				image.size = NSMakeSize(128., 128.);
-				previewImageView.image = image;
+				dispatch_async(dispatch_get_main_queue(), ^{ previewImageView.image = image; });
 			}
 		});
 		
@@ -2230,23 +2154,16 @@
 {
 	NSArray * selectedItems = [gridView selectedItems];
 	
-	NSPersistentStoreCoordinator * coordinator = [[NSApp delegate] persistentStoreCoordinator];
-	NSAssert(coordinator != nil, @"coordinator == nil");
-	
-	NSManagedObjectContext * context = [[NSManagedObjectContext alloc] init];
-	[context setPersistentStoreCoordinator:coordinator];
-	[context setUndoManager:nil];
-	
 	/* Get commons value from selected items */
 	NSMutableArray * fileItems = [[NSMutableArray alloc] initWithCapacity:selectedItems.count];
 	for (GridItem * item in selectedItems) {
 		
 		if (item.managedObject) {
-			[fileItems addObject:[context objectWithID:item.managedObject.objectID]];
+			[fileItems addObject:[self.managedObjectContext objectWithID:item.managedObject.objectID]];
 
 		} else {
-			NSManagedObject * newGroup = [context objectWithID:item.group.objectID];
-			NSArray * groups = [[newGroup mutableSetValueForKey:@"items"] allObjects];
+			NSManagedObject * newGroup = [self.managedObjectContext objectWithID:item.group.objectID];
+			NSArray * groups = [[newGroup primitiveValueForKey:@"items"] allObjects];
 			for (NSManagedObject * group in groups) {
 				[fileItems addObject:group];
 			}
@@ -2267,19 +2184,19 @@
 		
 		NSMutableDictionary * allItemsPanelAttributes = [[NSMutableDictionary alloc] initWithDictionary:commonsValues];
 		
-		NSString * type = [[NSWorkspace sharedWorkspace] localizedDescriptionForType:[commonsValues objectForKey:@"type"]];
+		NSString * type = [[NSWorkspace sharedWorkspace] localizedDescriptionForType:commonsValues[@"type"]];
 		if (type) {
-			[allItemsPanelAttributes setObject:type forKey:@"type"];
+			allItemsPanelAttributes[@"type"] = type;
 		}
 		
 		NSMutableArray * paths = [[NSMutableArray alloc] initWithCapacity:fileItems.count];
 		for (FileItem * item in fileItems) {
-			FileItem * newItem = (FileItem *)[context objectWithID:item.objectID];
+			FileItem * newItem = (FileItem *)[self.managedObjectContext objectWithID:item.objectID];
 			[paths addObject:newItem.path];
 		}
 		
 		NSString * rootPath = [self rootPathForPaths:paths];
-		[allItemsPanelAttributes setObject:rootPath forKey:@"rootPath"];
+		allItemsPanelAttributes[@"rootPath"] = rootPath;
 		
 		
 		itemsPanelAttributes = allItemsPanelAttributes;
@@ -2287,7 +2204,7 @@
 		NSMutableArray * allPanelRows = [[NSMutableArray alloc] initWithCapacity:itemsPanelAttributes.count];
 		
 		for (NSString * key in [itemsPanelAttributes allKeys]) {
-			id object = [itemsPanelAttributes objectForKey:key];
+			id object = itemsPanelAttributes[key];
 			
 			if ([key isEqualToString:@"rootPath"]) {
 				
@@ -2314,7 +2231,7 @@
 				if ([key isEqualToString:@"FileItemCompareUTI"]) {
 					value = [[NSWorkspace sharedWorkspace] localizedDescriptionForType:object];
 					if (!value) {
-						NSString * extension = [itemsPanelAttributes objectForKey:@"FileItemCompareExtension"];
+						NSString * extension = itemsPanelAttributes[@"FileItemCompareExtension"];
 						if (extension && extension.length > 0) { value = [NSString stringWithFormat:NSLocalizedString(@"%@ Files", nil), [extension capitalizedString]]; }
 						else { value = NSLocalizedString(@"Unknown Type", nil); }
 					}
@@ -2333,7 +2250,6 @@
 				} else if ([key isEqualToString:@"FileItemCompareExtension"]) {
 					NSString * extension = (NSString *)object;
 					if (extension && extension.length > 0) { value = extension; }
-					/* else { value = NSLocalizedString(@"_(No Extension)", nil); }*/
 				} else {
 					value = [NSString stringWithFormat:@"%@", object];
 				}
@@ -2472,17 +2388,10 @@
 
 - (void)showItemInformations:(GridItem *)item
 {
-	NSPersistentStoreCoordinator * coordinator = [[NSApp delegate] persistentStoreCoordinator];
-	NSAssert(coordinator != nil, @"coordinator == nil");
-	
-	NSManagedObjectContext * context = [[NSManagedObjectContext alloc] init];
-	[context setPersistentStoreCoordinator:coordinator];
-	[context setUndoManager:nil];
-	
 	/* ... generate the thumbnail from QuickLook */
-	FileItem * fileItem = (FileItem *)[context objectWithID:item.managedObject.objectID];
+	FileItem * fileItem = (FileItem *)[self.managedObjectContext objectWithID:item.managedObject.objectID];
 	if (!fileItem.path)
-		NSLog(@"no path for %@", fileItem);
+		NSDebugLog(@"no path for %@", fileItem);
 	[self refreshPrewiewForPath:fileItem.path];
 	
 	/* ... show buttons from right panel */
@@ -2541,15 +2450,7 @@
 	
 	[previewPanelView setHidden:NO];
 	
-	
-	NSPersistentStoreCoordinator * coordinator = [[NSApp delegate] persistentStoreCoordinator];
-	NSAssert(coordinator != nil, @"coordinator == nil");
-	
-	NSManagedObjectContext * context = [[NSManagedObjectContext alloc] init];
-	[context setPersistentStoreCoordinator:coordinator];
-	[context setUndoManager:nil];
-	
-	NSArray * items = [(NSSet *)[[context objectWithID:group.objectID] mutableSetValueForKey:@"items"] allObjects];
+	NSArray * items = [(NSSet *)[[self.managedObjectContext objectWithID:group.objectID] primitiveValueForKey:@"items"] allObjects];
 	
 	if ([SandboxHelper sandboxActived]) {
 		BOOL started = [SandboxHelper startAccessingSecurityScopedSources];
@@ -2564,9 +2465,9 @@
 	
 	NSMutableDictionary * allItemsPanelAttributes = [[NSMutableDictionary alloc] initWithDictionary:commonsValues];
 	
-	NSString * type = [[NSWorkspace sharedWorkspace] localizedDescriptionForType:[commonsValues objectForKey:@"type"]];
+	NSString * type = [[NSWorkspace sharedWorkspace] localizedDescriptionForType:commonsValues[@"type"]];
 	if (type) {
-		[allItemsPanelAttributes setObject:type forKey:@"type"];
+		allItemsPanelAttributes[@"type"] = type;
 	}
 	
 	NSMutableArray * paths = [[NSMutableArray alloc] initWithCapacity:items.count];
@@ -2575,7 +2476,7 @@
 	}
 	
 	NSString * rootPath = [self rootPathForPaths:paths];
-	[allItemsPanelAttributes setObject:rootPath forKey:@"rootPath"];
+	allItemsPanelAttributes[@"rootPath"] = rootPath;
 	
 	
 	itemsPanelAttributes = allItemsPanelAttributes;
@@ -2583,7 +2484,7 @@
 	NSMutableArray * allPanelRows = [[NSMutableArray alloc] initWithCapacity:itemsPanelAttributes.count];
 	
 	for (NSString * key in [itemsPanelAttributes allKeys]) {
-		id object = [itemsPanelAttributes objectForKey:key];
+		id object = itemsPanelAttributes[key];
 		
 		if ([key isEqualToString:@"rootPath"]) {
 			
@@ -2611,7 +2512,7 @@
 				
 				value = [[NSWorkspace sharedWorkspace] localizedDescriptionForType:object];
 				if (!value) {
-					NSString * extension = [itemsPanelAttributes objectForKey:@"FileItemCompareExtension"];
+					NSString * extension = itemsPanelAttributes[@"FileItemCompareExtension"];
 					if (extension) { value = [NSString stringWithFormat:NSLocalizedString(@"%@ Files", nil), [extension capitalizedString]]; }
 					else { value = NSLocalizedString(@"Unknown Type", nil); }
 				}
@@ -2677,7 +2578,7 @@
 		
 	} else if (gridItems.count == 1) {// If only one item or group is selected...
 		
-		GridItem * item = [gridItems objectAtIndex:0];
+		GridItem * item = gridItems.firstObject;
 		if (item.isGroup) {// ... if it's a group...
 			// Show only one group information from "item"
 			[self showGroupInformations:item.group];
@@ -2705,11 +2606,11 @@
 	/* Reload the "panelTableView" before fix the position and size */
 	[panelTableView reloadData];
 	
-	NSDictionary * attributes = [[NSDictionary alloc] initWithObjectsAndKeys:[NSFont systemFontOfSize:13./* fontWithName:@"Helvetica" size:13.*/], NSFontAttributeName, nil];
+	NSDictionary * attributes = @{ NSFontAttributeName : [NSFont systemFontOfSize:13.] };
 	
 	CGFloat maxWidth = 0.;
 	for (NSString * rowString in panelRows) {
-		NSString * key = [[[rowString componentsSeparatedByString:@"="] objectAtIndex:0] stringByAppendingString:@" :"];
+		NSString * key = [[rowString componentsSeparatedByString:@"="].firstObject stringByAppendingString:@" :"];
 		
 		float width = [key sizeWithAttributes:attributes].width;
 		if (width > maxWidth) maxWidth = width;
@@ -2775,7 +2676,7 @@
 
 - (NSArray *)titlesForSectionsInGridView:(GridView *)gridView
 {
-	return [NSArray arrayWithObject:@""];
+	return @[@""];
 }
 
 - (NSArray *)gridView:(GridView *)gridView itemsForSection:(NSInteger)section
@@ -3022,15 +2923,15 @@
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
 {
-	NSString * rowObject = [panelRows objectAtIndex:rowIndex];
+	NSString * rowObject = panelRows[rowIndex];
 	NSArray * components = [rowObject componentsSeparatedByString:@"="];
 	
 	if ([aTableColumn.identifier isEqualToString:@"key"]) {
-		NSString * key = [components objectAtIndex:0];
+		NSString * key = components.firstObject;
 		// Return "key:" if we have key value, else return nothing
 		return (key.length > 0)? [key stringByAppendingString:@" :"] : nil;
 	} else {
-		return (components.count >= 2)? [components objectAtIndex:1] : nil;
+		return (components.count >= 2)? components[1] : nil;
 	}
 }
 
@@ -3087,7 +2988,7 @@
 
 - (id <QLPreviewItem>)previewPanel:(QLPreviewPanel *)panel previewItemAtIndex:(NSInteger)index
 {
-	GridItem * selectedItem = [[gridView selectedItems] objectAtIndex:index];
+	GridItem * selectedItem = [gridView selectedItems][index];
 	return (FileItem *)selectedItem.managedObject;
 }
 

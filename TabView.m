@@ -13,7 +13,8 @@
 CGPathRef CreateRoundedPath(CGContextRef context, CGRect rect, float radius);
 CGPathRef CreateRoundedPath(CGContextRef context, CGRect rect, float radius)
 {
-	float x = rect.origin.x, y = rect.origin.y, width = rect.size.width, height = rect.size. height;
+	const CGFloat kMargin = 1.;
+	const float x = rect.origin.x + kMargin, y = rect.origin.y + kMargin, width = rect.size.width - 2. * kMargin, height = rect.size. height - 2. * kMargin;
 	CGContextBeginPath(context);
 	CGContextMoveToPoint(context, x, radius);
 	CGContextAddArcToPoint(context, x, y, x + radius, y, radius);
@@ -36,6 +37,9 @@ void FillRoundedRect(CGContextRef context, CGRect rect, float radius)
 {
 	CGContextRef context = [NSGraphicsContext currentContext].graphicsPort;
 	float radius = self.frame.size.height / 2.;
+	
+	[[NSColor windowBackgroundColor] setFill];
+	CGContextFillRect(context, dirtyRect);
 	
 	NSCell * cell = self.cell;
 	if (cell.isHighlighted) {
@@ -62,13 +66,11 @@ void FillRoundedRect(CGContextRef context, CGRect rect, float radius)
 		CGContextDrawLinearGradient(context, gradient, CGPointZero, CGPointMake(0., self.frame.size.height), 0);
 		CGGradientRelease(gradient);
 		
-		
 		path = CreateRoundedPath(context, NSRectToCGRect(dirtyRect), radius);
 		[[NSColor darkGrayColor] setStroke];
 		CGContextSetLineWidth(context, 2.);
 		CGContextStrokePath(context);
 		CGPathRelease(path);
-		
 		
 	} else if ([cell state] == NSOnState) {
 		
@@ -94,31 +96,44 @@ void FillRoundedRect(CGContextRef context, CGRect rect, float radius)
 		CGContextDrawLinearGradient(context, gradient, CGPointZero, CGPointMake(0., self.frame.size.height), 0);
 		CGGradientRelease(gradient);
 		
-		
 		path = CreateRoundedPath(context, NSRectToCGRect(dirtyRect), radius);
 		[[NSColor lightGrayColor] setStroke];
 		CGContextSetLineWidth(context, 2.);
 		CGContextStrokePath(context);
 		CGPathRelease(path);
-		
-	} else {
 	}
 	
-	/* Add shadow on text */
+	/* Add shadow on text *//*
 	NSShadow * shadow = [[NSShadow alloc] init];
 	shadow.shadowColor = (cell.isHighlighted)? [NSColor colorWithDeviceWhite:0. alpha:0.5] : [NSColor whiteColor];
 	shadow.shadowBlurRadius = 0.;
 	shadow.shadowOffset = NSMakeSize(0., -1.);
 	[shadow set];
-	
-	/* Set the color of the title (dark gray for normal state, white when highlighted) */
-	NSColor * textColor = (cell.isHighlighted)? [NSColor whiteColor] : [NSColor colorWithCalibratedWhite:0.1 alpha:1.];
-	[textColor setFill];
+	*/
 	
 	CGContextSetTextMatrix(context, CGAffineTransformMakeScale(1., -1.));// Flip the text from the actual not flipped view setting (flipping by the y axis)
 	
+	/* Set the color of the title (dark gray for normal state, white when highlighted) */
 	CGFloat fontHeight = 12.;// 12 pt
-	CGContextSelectFont(context, "Helvetica-Bold", fontHeight, kCGEncodingMacRoman);
+	NSFont * font = [NSFont systemFontOfSize:fontHeight];
+	NSColor * textColor = (cell.isHighlighted)? [NSColor whiteColor] : [NSColor colorWithCalibratedWhite:0.1 alpha:1.];
+	NSDictionary * attributes = @{ NSFontAttributeName : font, NSForegroundColorAttributeName : textColor };
+	NSAttributedString * string = [[NSAttributedString alloc] initWithString:self.title attributes:attributes];
+	CTLineRef line = CTLineCreateWithAttributedString((__bridge CFAttributedStringRef)string);
+	
+	CGRect bounds = CTLineGetBoundsWithOptions(line, 0);
+	CGContextTranslateCTM(context,
+						  ceilf((ceilf(dirtyRect.size.width) - bounds.size.width) / 2),
+						  dirtyRect.size.height - 6.);
+	CTLineDraw(line, context);
+	CFRelease(line);
+	
+	/*
+	CGContextSetTextMatrix(context, CGAffineTransformMakeScale(1., -1.));// Flip the text from the actual not flipped view setting (flipping by the y axis)
+	
+	CGFloat fontHeight = 12.;// 12 pt
+	NSString * systemFontName = [NSFont systemFontOfSize:10.].fontName;
+	CGContextSelectFont(context, systemFontName.UTF8String, fontHeight, kCGEncodingMacRoman);
 	
 	const char * string = [self.title UTF8String];
 	unsigned long length = strlen(string);
@@ -136,6 +151,7 @@ void FillRoundedRect(CGContextRef context, CGRect rect, float radius)
 	CGContextSetTextDrawingMode(context, kCGTextFill);
 	
 	CGContextShowTextAtPoint(context, textX, textY, string, length);
+	 */
 	
 	// @TODO: draw the two arrows here (near the title)
 	// @TODO: add "popupTarget" and "popupAction" to fire the target when clicking on arrows
@@ -151,7 +167,6 @@ void FillRoundedRect(CGContextRef context, CGRect rect, float radius)
 	CGContextRef context = [NSGraphicsContext currentContext].graphicsPort;
 	
 	CGContextSetTextMatrix(context, CGAffineTransformMakeScale(1., -1.));
-	//if ([(NSCell *)self.cell isHighlighted]) CGContextSetAlpha(context, 0.8);
 	CGContextDrawImage(context, NSRectToCGRect(dirtyRect), [[NSImage imageNamed:@"popup-button"] CGImageForProposedRect:NULL
 																								context:[NSGraphicsContext currentContext]
 																								  hints:nil]);
@@ -166,26 +181,26 @@ void FillRoundedRect(CGContextRef context, CGRect rect, float radius)
 @synthesize menu = _menu;
 @synthesize width = _width;
 
-+ (id)itemWithTitle:(NSString *)title
++ (instancetype)itemWithTitle:(NSString *)title
 {
 	TabItem * item = [[TabItem alloc] initWithTitle:title];
 	return item;
 }
 
-+ (id)itemWithMenu:(NSMenu *)menu
++ (instancetype)itemWithMenu:(NSMenu *)menu
 {
 	TabItem * item = [[TabItem alloc] initWithMenu:menu];
 	return item;
 }
 
-+ (id)itemWithMenu:(NSMenu *)menu selectedIndex:(NSInteger)index
++ (instancetype)itemWithMenu:(NSMenu *)menu selectedIndex:(NSInteger)index
 {
 	TabItem * item = [[TabItem alloc] initWithMenu:menu selectedIndex:index];
 	return item;
 }
 
 
-- (id)initWithTitle:(NSString *)title
+- (instancetype)initWithTitle:(NSString *)title
 {
 	if ((self = [super init])) {
 		_title = [title copy];
@@ -195,7 +210,7 @@ void FillRoundedRect(CGContextRef context, CGRect rect, float radius)
 	return self;
 }
 
-- (id)initWithMenu:(NSMenu *)menu
+- (instancetype)initWithMenu:(NSMenu *)menu
 {
 	if ((self = [super init])) {
 		_title = [[menu itemAtIndex:0].title copy];
@@ -206,7 +221,7 @@ void FillRoundedRect(CGContextRef context, CGRect rect, float radius)
 	return self;
 }
 
-- (id)initWithMenu:(NSMenu *)menu selectedIndex:(NSInteger)index
+- (instancetype)initWithMenu:(NSMenu *)menu selectedIndex:(NSInteger)index
 {
 	if ((self = [super init])) {
 		_title = [[menu itemAtIndex:index].title copy];
@@ -239,7 +254,7 @@ void FillRoundedRect(CGContextRef context, CGRect rect, float radius)
 @synthesize items = _items;
 @synthesize delegate = _delegate;
 
-- (id)initWithFrame:(NSRect)frame
+- (instancetype)initWithFrame:(NSRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
@@ -255,7 +270,7 @@ void FillRoundedRect(CGContextRef context, CGRect rect, float radius)
 	
 	[self invalidateLayout];
 	
-	TabItemButton * itemButton = [buttons objectAtIndex:0];
+	TabItemButton * itemButton = buttons.firstObject;
 	if (selectedButton != itemButton) {
 		itemButton.state = NSOffState;
 		selectedButton = itemButton;
@@ -287,7 +302,7 @@ void FillRoundedRect(CGContextRef context, CGRect rect, float radius)
 	
 	CGFloat currentX = leftMargin;
 	index = 0;
-	for (TabItem * item in _items) {
+	for (TabItem * item in _items.copy) {
 		
 		CGFloat width = item.width;
 		
@@ -345,7 +360,7 @@ void FillRoundedRect(CGContextRef context, CGRect rect, float radius)
 	NSButton * button = (NSButton *)sender;
 	
 	NSInteger index = button.tag;
-	NSMenu * menu = [(TabItem *)[_items objectAtIndex:index] menu];
+	NSMenu * menu = [(TabItem *)_items[index] menu];
 	
 	NSMenuItem * onItem = nil;
 	for (NSMenuItem * item in menu.itemArray) {
@@ -383,12 +398,12 @@ void FillRoundedRect(CGContextRef context, CGRect rect, float radius)
 	}
 	menuItem.state = NSOnState;
 	
-	TabItemButton * itemButton = [buttons objectAtIndex:selectedItem];
+	TabItemButton * itemButton = buttons[selectedItem];
 	itemButton.title = menuItem.title;
 	[self tabDidSelectedAction:itemButton];// Select the item from the menu
 	
 	if ([self.delegate respondsToSelector:@selector(tabView:didSelectMenuItem:fromItem:)]) {
-		TabItem * item = [_items objectAtIndex:selectedItem];
+		TabItem * item = _items[selectedItem];
 		[self.delegate tabView:self didSelectMenuItem:menuItem fromItem:item];
 	}
 }
@@ -404,7 +419,7 @@ void FillRoundedRect(CGContextRef context, CGRect rect, float radius)
 	selectedButton.state = NSOnState;
 	
 	if ([self.delegate respondsToSelector:@selector(tabView:didSelectItem:)])
-		[self.delegate tabView:self didSelectItem:[_items objectAtIndex:((NSButton *)sender).tag]];
+		[self.delegate tabView:self didSelectItem:_items[((NSButton *)sender).tag]];
 }
 
 - (void)setFrame:(NSRect)frameRect

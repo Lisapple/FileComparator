@@ -17,7 +17,7 @@ static NSArray * _availableOptions = nil;
 {
 	static BOOL initialized = NO;
 	if (!initialized) {
-		_availableOptions = [[NSArray alloc] initWithObjects:@"AudioItemCompareAlbum", @"AudioItemCompareApproximateDuration", @"AudioItemCompareArtist", @"AudioItemCompareChannelLayout", @"AudioItemCompareComments", @"AudioItemCompareComposer", @"AudioItemCompareCopyright", @"AudioItemCompareEncodingApplication", @"AudioItemCompareGenre", @"AudioItemCompareKeySignature", @"AudioItemCompareLyricist", @"AudioItemCompareNominalBitRate", @"AudioItemCompareRecorderDate", @"AudioItemCompareSourceBitDepth", @"AudioItemCompareSourceEncoder", @"AudioItemCompareTempo", @"AudioItemCompareTimeSignature", @"AudioItemCompareTitle", @"AudioItemCompareTrackNumber", @"AudioItemCompareYear", nil];
+		_availableOptions = @[@"AudioItemCompareAlbum", @"AudioItemCompareApproximateDuration", @"AudioItemCompareArtist", @"AudioItemCompareChannelLayout", @"AudioItemCompareComments", @"AudioItemCompareComposer", @"AudioItemCompareCopyright", @"AudioItemCompareEncodingApplication", @"AudioItemCompareGenre", @"AudioItemCompareKeySignature", @"AudioItemCompareLyricist", @"AudioItemCompareNominalBitRate", @"AudioItemCompareRecorderDate", @"AudioItemCompareSourceBitDepth", @"AudioItemCompareSourceEncoder", @"AudioItemCompareTempo", @"AudioItemCompareTimeSignature", @"AudioItemCompareTitle", @"AudioItemCompareTrackNumber", @"AudioItemCompareYear"];
 		
 		initialized = YES;
 	}
@@ -394,7 +394,7 @@ static NSArray * _availableOptions = nil;
 					return NO;
 				}
 			} else {
-				if (![super isEqualTo:anotherItem options:[NSArray arrayWithObject:option]]) {// Else, compare with FileItem class
+				if (![super isEqualTo:anotherItem options:@[option]]) {// Else, compare with FileItem class
 					return NO;
 				}
 			}
@@ -448,7 +448,7 @@ static NSArray * _availableOptions = nil;
 			[self getOptionInfo:option];
 			id value = [self valueForOption:option];
 			if (value) {
-				[attributes setObject:value forKey:option];
+				attributes[option] = value;
 			}
 		}
 	}
@@ -465,10 +465,10 @@ static NSArray * _availableOptions = nil;
 	NSDictionary * itemValues = [self itemValues];
 	NSDictionary * anotherItemValues = [anotherItem itemValues];
 	for (NSString * key in [itemValues allKeys]) {
-		id object = [itemValues objectForKey:key];
-		id anotherObject = [anotherItemValues objectForKey:key];
+		id object = itemValues[key];
+		id anotherObject = anotherItemValues[key];
 		if ([object isEqualTo:anotherObject]) {
-			[commonValues setObject:object forKey:key];
+			commonValues[key] = object;
 		}
 	}
 	
@@ -490,7 +490,7 @@ static NSArray * _availableOptions = nil;
 		
 		id value = [self valueForOption:option];
 		if (value)
-			[attributes setObject:value forKey:option];
+			attributes[option] = value;
 	}
 	
 	/*

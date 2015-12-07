@@ -13,13 +13,12 @@
 - (BOOL)moveToTrash
 {
 	BOOL success;
-	if ([[NSFileManager defaultManager] respondsToSelector:@selector(trashItemAtURL:resultingItemURL:error:)]) {/* Since 10.8, use -[NSFileManager trashItemAtURL:resultingItemURL:error:] */
+	if ([[NSFileManager defaultManager] respondsToSelector:@selector(trashItemAtURL:resultingItemURL:error:)]) { // OS X.8+
 		success = (BOOL)[[NSFileManager defaultManager] trashItemAtURL:[NSURL fileURLWithPath:self.path] resultingItemURL:nil error:nil];
-	}  else {
+	} else {
 		const char * folderPath = self.path.UTF8String;
 		char * targetPath = NULL;
 		FSPathMoveObjectToTrashSync(folderPath, &targetPath, 0);
-		
 		success = (targetPath != NULL);
 	}
 	return success;
@@ -37,9 +36,7 @@
 
 - (BOOL)moveToPath:(NSString *)newPath
 {
-	return [[NSFileManager defaultManager] moveItemAtPath:self.path
-												   toPath:newPath
-													error:NULL];
+	return [[NSFileManager defaultManager] moveItemAtPath:self.path toPath:newPath error:NULL];
 }
 
 - (BOOL)moveToURL:(NSURL *)newURL

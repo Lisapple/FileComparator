@@ -8,8 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
-#define NSFileManagerAdditionSkipLength @"NSFileManagerAdditionSkipLength" // Number of kB to skip after a fetch
-#define NSFileManagerAdditionFetchLength @"NSFileManagerAdditionFetchLength" // Number of kB to fetch
+extern NSString * const NSFileManagerAdditionSkipLength; // Number of kB to skip after a fetch
+extern NSString * const NSFileManagerAdditionFetchLength; // Number of kB to fetch
+extern NSString * const NSFileManagerAdditionSkipSizeComparison; // Boolean to skip or not the file size comparison (not implemented)
 
 @interface NSFileManager (addition)
 

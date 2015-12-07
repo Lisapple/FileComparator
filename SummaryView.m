@@ -10,8 +10,6 @@
 
 @implementation SummaryView
 
-@synthesize numberOfDuplicatesLabel, totalSizeLabel;
-
 - (void)drawRect:(NSRect)dirtyRect
 {
 	[[NSColor windowBackgroundColor] set];

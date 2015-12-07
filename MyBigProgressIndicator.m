@@ -53,8 +53,6 @@
 	if (timer) {
 		dispatch_suspend(timer);
 		dispatch_source_cancel(timer);
-		//dispatch_release(timer);
-		timer = NULL;
 	}
 }
 
@@ -106,6 +104,7 @@
 #define kMinimumAlpha 0.25
 			[[NSColor colorWithCalibratedWhite:0.33 alpha:(kMinimumAlpha + (1. - (alpha - intPart)) * (1. - kMinimumAlpha))] setStroke];
 			CGContextStrokePath(context);
+#undef kMinimumAlpha
 		}
 		
 	} else {
@@ -145,18 +144,6 @@
 	}
 }
 
-- (IBAction)changeState:(id)sender
-{
-	NSButton * button = (NSButton *)sender;
-	self.indeterminate = ([button state] == 1);
-	
-	if (self.indeterminate) {
-		[self startAnimation:nil];
-	} else {
-		[self stopAnimation:nil];
-	}
-}
-
 - (void)setDoubleValue:(double)doubleValue
 {
 	currentValue = 100. - doubleValue;
@@ -167,6 +154,18 @@
 {
 	currentValue -= delta;
 	[self setNeedsDisplay:YES];
+}
+
+- (void)removeFromSuperviewWithoutNeedingDisplay
+{
+	[self stopAnimation:nil];
+	[super removeFromSuperviewWithoutNeedingDisplay];
+}
+
+- (void)removeFromSuperview
+{
+	[self stopAnimation:nil];
+	[super removeFromSuperview];
 }
 
 @end

@@ -14,11 +14,11 @@
 - (NSComparisonResult)compareFirstObjects:(NSArray *)anotherArray
 {
 	if (self.count > 0 && anotherArray.count > 0) {
-		id object1 = [self objectAtIndex:0];
-		id object2 = [anotherArray objectAtIndex:0];
+		id object1 = self.firstObject;
+		id object2 = anotherArray.firstObject;
 		
 		if ([object1 isKindOfClass:[object2 class]])
-			return [[self objectAtIndex:0] compare:[anotherArray objectAtIndex:0]];
+			return [self.firstObject compare:anotherArray.firstObject];
 	}
 	
 	return -2;

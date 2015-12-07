@@ -37,7 +37,7 @@ static NSArray * _availableOptions = nil;
 {
 	static BOOL initialized = NO;
 	if (!initialized) {
-		_availableOptions = [[NSArray alloc] initWithObjects:@"FileItemCompareSize", @"FileItemCompareFilename", @"FileItemCompareUTI", @"FileItemCompareExtension", @"FileItemCompareCreationDate", @"FileItemCompareLastModificationDate", nil];
+		_availableOptions = @[@"FileItemCompareSize", @"FileItemCompareFilename", @"FileItemCompareUTI", @"FileItemCompareExtension", @"FileItemCompareCreationDate", @"FileItemCompareLastModificationDate"];
 		
 		initialized = YES;
 	}
@@ -55,8 +55,8 @@ static NSArray * _availableOptions = nil;
 			NSArray * commonKeysCopy = [[commonValues allKeys] copy];
 			NSDictionary * itemValues = [item itemValues];
 			for (NSString * key in commonKeysCopy) {
-				id object = [itemValues objectForKey:key];
-				id commonObject = [commonValues objectForKey:key];
+				id object = itemValues[key];
+				id commonObject = commonValues[key];
 				if (![object isEqualTo:commonObject]) {
 					[commonValues removeObjectForKey:key];
 					
@@ -147,19 +147,19 @@ static NSArray * _availableOptions = nil;
 	} else if ([option isEqualToString:@"FileItemCompareCreationDate"]) {
 		if (!item.lastModificationDate) {
 			NSDictionary * attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:item.path error:NULL];
-			item.creationDate = [attributes objectForKey:NSFileCreationDate];
+			item.creationDate = attributes[NSFileCreationDate];
 		}
 	} else if ([option isEqualToString:@"FileItemCompareLastModificationDate"]) {
 		if (!item.lastModificationDate) {
 			NSDictionary * attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:item.path error:NULL];
-			item.lastModificationDate = [attributes objectForKey:NSFileModificationDate];
+			item.lastModificationDate = attributes[NSFileModificationDate];
 		}
 	} else {
 		// Just ignore, it could be for images, audio or movie files, or even doesn't exist, it not matters.
 	}
 }
 
-- (id)initWithPath:(NSString *)aPath
+- (instancetype)initWithPath:(NSString *)aPath
 {
 	if ((self = [self init])) {
 		self.path = aPath;
@@ -254,7 +254,7 @@ static NSArray * _availableOptions = nil;
 
 - (void)setLocked:(BOOL)locked
 {
-	[self setLockState:[NSNumber numberWithBool:locked]];
+	[self setLockState:@(locked)];
 }
 
 - (BOOL)isHidden
@@ -330,11 +330,18 @@ static NSArray * _availableOptions = nil;
 			if (self.fileSize.longLongValue != anotherItem.fileSize.longLongValue)
 				return NO;
 			
-			BOOL equals;
-			if (self.fileSize.unsignedLongLongValue > (50. * 1000. * 1000.)) { // If the size if more than 50MB
+			BOOL equals = NO;
+			if (self.fileSize.unsignedLongLongValue > (5. * 1000. * 1000.)) { // If the size if more than 5MB
+				/*
 				NSDictionary * options = @{ NSFileManagerAdditionFetchLength : @10,
-								NSFileManagerAdditionSkipLength : @1000 }; // Compare 10kB every Mb
+											NSFileManagerAdditionSkipLength : @10000 }; // Compare 10kB every 10Mb
 				equals = [[NSFileManager defaultManager] contentsEqualAtPath:self.path andPath:anotherItem.path withOptions:options];
+				 */
+				equals = [[NSFileManager defaultManager] contentsEqualAtPath:self.path andPath:anotherItem.path skipRatio:0.05];
+				
+				if (equals && self.fileSize.unsignedLongLongValue < (50. * 1000. * 1000.)) { // If the size if less than 50MB, compare the full file
+					equals = [[NSFileManager defaultManager] contentsEqualAtPath:self.path andPath:anotherItem.path];
+				}
 			} else {
 				equals = [[NSFileManager defaultManager] contentsEqualAtPath:self.path andPath:anotherItem.path];
 			}
@@ -382,7 +389,7 @@ static NSArray * _availableOptions = nil;
 		[FileItem getOptionInfo:option forItem:self];
 		id value = [FileItem valueForOption:option fromItem:self];
 		if (value) {
-			[attributes setObject:value forKey:option];
+			attributes[option] = value;
 		}
 	}
 	
@@ -396,10 +403,10 @@ static NSArray * _availableOptions = nil;
 	NSDictionary * itemValues = [self itemValues];
 	NSDictionary * anotherItemValues = [anotherItem itemValues];
 	for (NSString * key in [itemValues allKeys]) {
-		id object = [itemValues objectForKey:key];
-		id anotherObject = [anotherItemValues objectForKey:key];
+		id object = itemValues[key];
+		id anotherObject = anotherItemValues[key];
 		if ([object isEqualTo:anotherObject]) {
-			[commonValues setObject:object forKey:key];
+			commonValues[key] = object;
 		}
 	}
 	
@@ -423,7 +430,7 @@ static NSArray * _availableOptions = nil;
 	/* Color the background for file that have label color on Finder */
 	if ([self.labelColorNumber intValue] > 0) {
 		NSArray * fileLabelColors = [[NSWorkspace sharedWorkspace] fileLabelColors];
-		return [fileLabelColors objectAtIndex:[self.labelColorNumber intValue]];
+		return fileLabelColors[[self.labelColorNumber intValue]];
 	}
 	
 	return nil;
@@ -488,7 +495,7 @@ static NSArray * _availableOptions = nil;
 		}
 		
 		if (localizedValue) {
-			[attributes setObject:localizedValue forKey:option];
+			attributes[option] = localizedValue;
 		}
 	}
 	

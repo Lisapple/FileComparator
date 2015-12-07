@@ -7,6 +7,7 @@
 //
 
 #import "OptionItem.h"
+#import "NSString+addition.h"
 
 @implementation Section
 
@@ -25,7 +26,7 @@ static NSArray * sections = nil;
 		[request setEntity:[NSEntityDescription entityForName:@"Section" inManagedObjectContext:context]];
 		
 		NSSortDescriptor * sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"index" ascending:YES];
-		[request setSortDescriptors:[NSArray arrayWithObject:sortDescriptor]];
+		[request setSortDescriptors:@[sortDescriptor]];
 		
 		sections = [context executeFetchRequest:request error:NULL];
 	}
@@ -33,17 +34,15 @@ static NSArray * sections = nil;
 	return sections;
 }
 
-- (id)init
+- (instancetype)init
 {
 	NSManagedObjectContext * managedObjectContext = [OptionItem managedObjectContext];
-	
 	NSEntityDescription * entity = [NSEntityDescription entityForName:@"Section" inManagedObjectContext:managedObjectContext];
 	Section * section = [[Section alloc] initWithEntity:entity insertIntoManagedObjectContext:managedObjectContext];
-	
 	return section;
 }
 
-- (id)initWithName:(NSString *)name
+- (instancetype)initWithName:(NSString *)name
 {
 	static int _index = 0;
 	
@@ -51,21 +50,17 @@ static NSArray * sections = nil;
 	
 	NSEntityDescription * entity = [NSEntityDescription entityForName:@"Section" inManagedObjectContext:managedObjectContext];
 	Section * section = [[Section alloc] initWithEntity:entity insertIntoManagedObjectContext:managedObjectContext];
-	
 	section.name = name;
-	section.index = [NSNumber numberWithInt:_index++];
-	
+	section.index = @(_index++);
 	return section;
 }
 
 - (NSArray *)groups
 {
 	if (!groups) {
-		NSSortDescriptor * sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"index" ascending:YES];
-		
 		NSArray * array = [[self mutableSetValueForKey:@"groups"] allObjects];
-		groups = [array sortedArrayUsingDescriptors:[NSArray arrayWithObject:sortDescriptor]];
-		
+		NSSortDescriptor * sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"index" ascending:YES];
+		groups = [array sortedArrayUsingDescriptors:@[ sortDescriptor ]];
 	}
 	
 	return groups;
@@ -82,13 +77,13 @@ static NSArray * sections = nil;
 			NSArray * objects = [[group mutableSetValueForKeyPath:@"items"] allObjects];
 			for (OptionItem * item in objects) {
 				if (!item.index)
-					item.index = [NSNumber numberWithInt:index];
+					item.index = @(index);
 				index++;
 			}
 		}
 		
 		NSSortDescriptor * sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"index" ascending:YES];
-		[items sortUsingDescriptors:[NSArray arrayWithObject:sortDescriptor]];
+		[items sortUsingDescriptors:@[sortDescriptor]];
 		
 		options = items;
 	}
@@ -107,7 +102,7 @@ static NSArray * sections = nil;
 	NSArray * items = [allItems filteredArrayUsingPredicate:predicate];
 	
 	if (items.count > 0)
-		return [items objectAtIndex:0];
+		return items.firstObject;
 	
 	return nil;
 }
@@ -116,18 +111,6 @@ static NSArray * sections = nil;
 {
 	NSPredicate * predicate = [NSPredicate predicateWithFormat:@"(%i == index) || (%i == index)", (row * 2), (row * 2) + 1 ];
 	return [[self allOptions] filteredArrayUsingPredicate:predicate];
-	
-	/*
-	NSMutableArray * optionItems = [[NSMutableArray alloc] initWithCapacity:2];
-	[optionItems addObject:[self optionItemWithIndex:(row * 2)]];
-	
-	OptionItem * option = [self optionItemWithIndex:(row * 2) + 1];
-	if (option) {
-		[optionItems addObject:option];
-	}
-	
-	return [optionItems autorelease];
-	 */
 }
 
 - (NSInteger)numberOfRow
@@ -150,7 +133,7 @@ static NSArray * sections = nil;
 @dynamic name;
 @dynamic index;
 
-- (id)initWithSection:(Section *)section
+- (instancetype)initWithSection:(Section *)section
 {
 	NSManagedObjectContext * managedObjectContext = [OptionItem managedObjectContext];
 	
@@ -164,7 +147,7 @@ static NSArray * sections = nil;
 	if (uuidRef) CFRelease(uuidRef);
 	
 	static int _index = 0;
-	group.index = [NSNumber numberWithInt:_index++];
+	group.index = @(_index++);
 	
 	[group setValue:section forKey:@"sections"];
 	
@@ -174,14 +157,10 @@ static NSArray * sections = nil;
 - (NSArray *)options
 {
 	if (!options) {
-		
 		NSSortDescriptor * sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"index" ascending:YES];
-		
 		NSArray * array = [[self mutableSetValueForKey:@"items"] allObjects];
-		options = [array sortedArrayUsingDescriptors:[NSArray arrayWithObject:sortDescriptor]];
-		
+		options = [array sortedArrayUsingDescriptors:@[sortDescriptor]];
 	}
-	
 	return options;
 }
 
@@ -191,7 +170,7 @@ static NSArray * sections = nil;
 	NSArray * items = [[self options] filteredArrayUsingPredicate:predicate];
 	
 	if (items.count > 0)
-		return [items objectAtIndex:0];
+		return items.firstObject;
 	
 	return nil;
 }
@@ -243,11 +222,11 @@ static NSMutableDictionary * _localizedNames = NULL, * _localizedShortDescriptio
 
 + (NSString *)localizedNameForOption:(NSString *)option
 {
-	NSString * localizedName = [_localizedNames objectForKey:option];
+	NSString * localizedName = _localizedNames[option];
 	if (!localizedName) {
 		NSString * optionName = [option stringByAppendingString:@"Name"];
 		localizedName = NSLocalizedString(optionName, nil);
-		[_localizedNames setObject:localizedName forKey:option];
+		_localizedNames[option] = localizedName;
 	}
 	
 	return localizedName;
@@ -255,11 +234,11 @@ static NSMutableDictionary * _localizedNames = NULL, * _localizedShortDescriptio
 
 + (NSString *)localizedShortDescriptionForOption:(NSString *)option
 {
-	NSString * localizedShortDescription = [_localizedShortDescriptions objectForKey:option];
+	NSString * localizedShortDescription = _localizedShortDescriptions[option];
 	if (!localizedShortDescription) {
 		NSString * optionShortDescription = [option stringByAppendingString:@"ShortDescription"];
 		localizedShortDescription = NSLocalizedString(optionShortDescription, nil);
-		[_localizedShortDescriptions setObject:localizedShortDescription forKey:option];
+		_localizedShortDescriptions[option] = localizedShortDescription;
 	}
 	
 	return localizedShortDescription;
@@ -275,7 +254,7 @@ static NSMutableDictionary * _localizedNames = NULL, * _localizedShortDescriptio
 	}
 }
 
-- (id)init
+- (instancetype)init
 {
 	if (!managedObjectContext) {
 		managedObjectContext = [OptionItem managedObjectContext];
@@ -292,7 +271,7 @@ static NSMutableDictionary * _localizedNames = NULL, * _localizedShortDescriptio
 	return [NSString stringWithFormat:@"%@ (%@)", self, self.index];
 }
 
-- (id)initWithGroup:(Group *)group
+- (instancetype)initWithGroup:(Group *)group
 {
 	if (!managedObjectContext) {
 		managedObjectContext = [OptionItem managedObjectContext];
@@ -310,7 +289,7 @@ static NSMutableDictionary * _localizedNames = NULL, * _localizedShortDescriptio
 {
 	NSArray * groups = [[self mutableSetValueForKey:@"groups"] allObjects];
 	if (groups.count > 0)
-		return [groups objectAtIndex:0];
+		return groups.firstObject;
 	
 	return nil;
 }
@@ -319,7 +298,7 @@ static NSMutableDictionary * _localizedNames = NULL, * _localizedShortDescriptio
 {
 	NSArray * sections = [[self mutableSetValueForKeyPath:@"groups.sections"] allObjects];
 	if (sections.count > 0)
-		return [sections objectAtIndex:0];
+		return sections.firstObject;
 	
 	return nil;
 }
@@ -335,7 +314,7 @@ static NSMutableDictionary * _localizedNames = NULL, * _localizedShortDescriptio
 	NSString * option = self.identifier;
 	/* Don't add the "Compare the" to advanced options */
 	if (option.length >= @"AdvancedOptions".length && [[option substringToIndex:@"AdvancedOptions".length] isEqualToString:@"AdvancedOptions"]) {// Check if the option begins with "AdvancedOptions"
-		return [[OptionItem localizedNameForOption:option] capitalizedString];
+		return [OptionItem localizedNameForOption:option].firstLetterCapitalized;
 	} else {
 		return [NSString stringWithFormat:NSLocalizedString(@"Compare the %@", nil), [OptionItem localizedNameForOption:option]];
 	}
@@ -418,10 +397,11 @@ static NSMutableDictionary * _localizedNames = NULL, * _localizedShortDescriptio
 	
 	NSManagedObjectContext * context = [OptionItem managedObjectContext];
 	NSFetchRequest * request = [[NSFetchRequest alloc] init];
-	[request setPredicate:[NSPredicate predicateWithFormat:@"identifier == %@", @"AdvancedOptionsIncludeHiddenItems"]];
-	[request setEntity:[NSEntityDescription entityForName:@"OptionItem" inManagedObjectContext:context]];
+	request.predicate = [NSPredicate predicateWithFormat:@"identifier == %@", @"AdvancedOptionsIncludeHiddenItems"];
+	request.entity = [NSEntityDescription entityForName:@"OptionItem" inManagedObjectContext:context];
+	request.fetchLimit = 1;
 	
-	OptionItem * option = [[context executeFetchRequest:request error:NULL] objectAtIndex:0];
+	OptionItem * option = [context executeFetchRequest:request error:NULL].firstObject;
 	return option.selected.boolValue;
 }
 
@@ -432,10 +412,11 @@ static NSMutableDictionary * _localizedNames = NULL, * _localizedShortDescriptio
 	
 	NSManagedObjectContext * context = [OptionItem managedObjectContext];
 	NSFetchRequest * request = [[NSFetchRequest alloc] init];
-	[request setPredicate:[NSPredicate predicateWithFormat:@"identifier == %@", @"AdvancedOptionsIncludeBundleContent"]];
-	[request setEntity:[NSEntityDescription entityForName:@"OptionItem" inManagedObjectContext:context]];
+	request.predicate = [NSPredicate predicateWithFormat:@"identifier == %@", @"AdvancedOptionsIncludeBundleContent"];
+	request.entity = [NSEntityDescription entityForName:@"OptionItem" inManagedObjectContext:context];
+	request.fetchLimit = 1;
 	
-	OptionItem * option = [[context executeFetchRequest:request error:NULL] objectAtIndex:0];
+	OptionItem * option = [context executeFetchRequest:request error:NULL].firstObject;
 	return option.selected.boolValue;
 }
 
@@ -449,7 +430,7 @@ static NSMutableDictionary * _localizedNames = NULL, * _localizedShortDescriptio
 	[request setPredicate:[NSPredicate predicateWithFormat:@"identifier == %@", @"AdvancedOptionsSearchBrokenAliases"]];
 	[request setEntity:[NSEntityDescription entityForName:@"OptionItem" inManagedObjectContext:context]];
 	
-	OptionItem * option = [[context executeFetchRequest:request error:NULL] objectAtIndex:0];
+	OptionItem * option = [context executeFetchRequest:request error:NULL].firstObject;
 	return option.selected.boolValue;
 }
 
@@ -463,7 +444,7 @@ static NSMutableDictionary * _localizedNames = NULL, * _localizedShortDescriptio
 	[request setPredicate:[NSPredicate predicateWithFormat:@"identifier == %@", @"AdvancedOptionsSearchEmptyItems"]];
 	[request setEntity:[NSEntityDescription entityForName:@"OptionItem" inManagedObjectContext:context]];
 	
-	OptionItem * option = [[context executeFetchRequest:request error:NULL] objectAtIndex:0];
+	OptionItem * option = [context executeFetchRequest:request error:NULL].firstObject;
 	return option.selected.boolValue;
 }
 
@@ -480,7 +461,7 @@ static NSMutableDictionary * _localizedNames = NULL, * _localizedShortDescriptio
 + (NSString *)applicationSupportDirectory {
 	
     NSArray * paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
-    NSString * basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : NSTemporaryDirectory();
+    NSString * basePath = ([paths count] > 0) ? paths.firstObject : NSTemporaryDirectory();
     return [basePath stringByAppendingPathComponent:@"File Comparator"];
 }
 
@@ -527,7 +508,7 @@ static NSMutableDictionary * _localizedNames = NULL, * _localizedShortDescriptio
 	
 	if (![fileManager fileExistsAtPath:applicationSupportDirectory isDirectory:NULL] ) {
 		if (![fileManager createDirectoryAtPath:applicationSupportDirectory withIntermediateDirectories:NO attributes:nil error:&error]) {
-			NSAssert(NO, ([NSString stringWithFormat:@"Failed to create App Support directory %@ : %@", applicationSupportDirectory,error]));
+			[NSException raise:@"FileComparatorException" format:@"Failed to create App Support directory %@ : %@", applicationSupportDirectory, error];
 			NSDebugLog(@"Error creating application support directory at %@ : %@",applicationSupportDirectory,error);
 			return nil;
 		}

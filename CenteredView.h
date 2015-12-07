@@ -13,7 +13,7 @@ typedef struct {
 	float top, bottom;
 } RectEdge;
 
-RectEdge RectEdgeZero();
+extern const RectEdge RectEdgeZero;
 RectEdge RectEdgeMake(float top, float left, float bottom, float right);
 
 @interface CenteredView : NSView

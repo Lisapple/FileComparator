@@ -21,18 +21,18 @@
 
 + (NSArray *)sections;
 
-- (id)initWithName:(NSString *)name;
+- (instancetype)initWithName:(NSString *)name;
 
-- (NSArray *)groups;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSArray *groups;
 
-- (NSArray *)allOptions;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSArray *allOptions;
 - (OptionItem *)optionItemWithIndex:(NSInteger)index;
 
 - (NSArray *)optionsAtRow:(NSInteger)row;
 
-- (NSInteger)numberOfRow;
+@property (NS_NONATOMIC_IOSONLY, readonly) NSInteger numberOfRow;
 
-- (NSString *)localizedDescriptionString;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *localizedDescriptionString;
 
 @end
 
@@ -45,12 +45,12 @@
 @property (nonatomic, strong) NSString * name;
 @property (nonatomic, strong) NSNumber * index;
 
-- (id)initWithSection:(Section *)section;
-- (NSArray *)options;
+- (instancetype)initWithSection:(Section *)section;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSArray *options;
 
 - (OptionItem *)optionItemWithIndex:(NSInteger)index;
 - (NSArray *)optionsAtRow:(NSInteger)row;
-- (NSInteger)numberOfRow;
+@property (NS_NONATOMIC_IOSONLY, readonly) NSInteger numberOfRow;
 
 @end
 
@@ -69,10 +69,10 @@
 
 + (NSManagedObjectContext *)managedObjectContext;
 
-- (id)initWithGroup:(Group *)group;
+- (instancetype)initWithGroup:(Group *)group;
 
-- (NSString *)localizedName;
-- (NSString *)localizedDescription;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *localizedName;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *localizedDescription;
 
 + (void)save;
 + (void)rollback;

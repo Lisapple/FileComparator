@@ -22,7 +22,7 @@
 @property (nonatomic, strong) NSString * tiffCompression, * tiffMake, * tiffModel, * tiffSoftware;
 
 
-- (NSDictionary *)localizedItemValues;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSDictionary *localizedItemValues;
 - (id)valueForOption:(NSString *)option;
 
 

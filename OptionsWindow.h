@@ -32,7 +32,7 @@
 - (IBAction)cancelAction:(id)sender;
 
 // Private
-- (BOOL)allOptionsAreUnselected;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL allOptionsAreUnselected;
 
 - (BOOL)tableView:(NSTableView *)tableView rowIsGroupRow:(NSInteger)row;
 
